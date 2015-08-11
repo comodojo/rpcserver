@@ -22,11 +22,11 @@ use \Comodojo\Exception\RpcException;
  
 class MethodHelp {
 
-    final public static function execute($system, $params) {
+    final public static function execute($params) {
         
         $asked_method = $params->get(0);
         
-        $method = $system->getMethod($asked_method);
+        $method = $params->getMethod($asked_method);
         
         if ( is_null($method) ) throw new RpcException("Method not found", -32601);
         

@@ -1,4 +1,4 @@
-<?php namespace Comodojo\RpcServer\Introspection;
+<?php namespace Comodojo\RpcServer\Reserved;
 
 /** 
  * tbw
@@ -18,13 +18,11 @@
  * THE SOFTWARE.
  */
  
-class ListMethods {
+class GetCapabilities {
 
     final public static function execute($params) {
         
-        $methods = $params->getMethods();
-        
-        return array_keys($methods);
+        return $params->getCapabilities();
         
     }
 

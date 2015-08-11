@@ -28,6 +28,89 @@ use \Crypt_AES;
  */
  
  class RpcServer {
-     
+    
+    private $capabilities = null;
+    
+    private $methods = null;
+    
+    private $errors = null;
+    
+    public function __construct($protocol) {
+        
+        $this->capabilities = new RpcCapabilities();
+        
+        $this->methods = new RpcMethods();
+        
+        $this->errors = new RpcErrors();
+        
+        self::setIntrospectionMethods($this->methods);
+        
+        self::setCapabilities($this->capabilities);
+        
+    }
+    
+    public function addCapability() {}
+    
+    public function addMethod() {}
+    
+    public function addError() {}
+    
+    public function serve() {}
+    
+    static private function setIntrospectionMethods($methods) {
+        
+        $get_capabilities = RpcMethod::create("system.getCapabilities", "\Comodojo\RpcServer\Reserved\GetCapabilities", "execute")
+            ->setDescription("This method lists all the capabilites that the RPC server has: the (more or less standard) extensions to the RPC spec that it adheres to")
+            ->setReturnType('struct');
+        
+        $methods->add($get_capabilities);
+        
+        $list_methods = RpcMethod::create("system.listMethods", "\Comodojo\RpcServer\Introspection\ListMethods", "execute")
+            ->setDescription("This method lists all the methods that the RPC server knows how to dispatch")
+            ->setReturnType('array');
+            
+        $methods->add($list_methods);
+        
+        $method_help = RpcMethod::create("system.methodHelp", "\Comodojo\RpcServer\Introspection\MethodHelp", "execute")
+            ->setDescription("Returns help text if defined for the method passed, otherwise returns an empty string")
+            ->setReturnType('string')
+            ->addParameter('string');
+            
+        $methods->add($method_help);
+        
+        $method_signature = RpcMethod::create("system.methodSignature", "\Comodojo\RpcServer\Introspection\MethodSignature", "execute")
+            ->setDescription("Returns an array of known signatures (an array of arrays) for the method name passed. 
+        If no signatures are known, returns a none-array (test for type != array to detect missing signature)")
+            ->setReturnType('array')
+            ->addParameter('string');
+        
+        $methods->add($method_signature);
+            
+        $multicall = RpcMethod::create("system.multicall", "\Comodojo\RpcServer\Reserved\Multicall", "execute")
+            ->setDescription("Boxcar multiple RPC calls in one request. See http://www.xmlrpc.com/discuss/msgReader\$1208 for details")
+            ->setReturnType('array')
+            ->addParameter('array');
+            
+        $methods->add($multicall);
+    
+    }
+    
+    static private function setCapabilities($capabilities) {
+    
+        $capabilities->add('xmlrpc', 'http://www.xmlrpc.com/spec', 1);
+        
+        $capabilities->add('system.multicall', 'http://www.xmlrpc.com/discuss/msgReader$1208', 1);
+        
+        $capabilities->add('introspection', 'http://phpxmlrpc.sourceforge.net/doc-2/ch10.html', 2);
+        
+        $capabilities->add('nil', 'http://www.ontosys.com/xml-rpc/extensions.php', 1);
+        
+        $capabilities->add('faults_interop', 'http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php', 20010516);
+        
+        $capabilities->add('json-rpc', 'http://www.jsonrpc.org/specification', 2);
+    
+    }
+    
+    
  }
  

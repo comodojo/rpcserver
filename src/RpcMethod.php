@@ -88,13 +88,21 @@ class RpcMethod {
         
     }
     
-    public function addParameter($parameter, $type) {
-        
-        if ( empty($parameter) OR !is_string($parameter) ) throw new Exception("RPC method exception: invalid parameter name");
+    public function addParameter($type, $parameter = null) {
         
         if ( !in_array($type, RpcValues::$values) ) throw new Exception("RPC method exception: invalid parameter type");
         
-        $this->parameters[$parameter] = $type;
+        if ( empty($parameter) ) {
+            
+            $this->parameters[] = $type;
+            
+        } else {
+          
+            if ( !is_string($parameter) ) throw new Exception("RPC method exception: invalid parameter name");
+            
+            $this->parameters[$parameter] = $type;
+            
+        }
         
         return $this;
         
@@ -126,10 +134,27 @@ class RpcMethod {
         
     }
     
+    public static function create($name, $callback, $method = null) {
+        
+        try {
+            
+            $method = new RpcMethod($name, $callback, $method);
+            
+        } catch (Exception $e) {
+            
+            throw $e;
+            
+        }
+        
+        return $method;
+        
+    }
+    
     private static function checkIfCallable($callback, $method) {
         
         return empty($method) ? is_callable($callback) : is_callable($callback, $method);
         
     }
+    
     
 }
