@@ -1,6 +1,4 @@
-<?php namespace Comodojo\RpcServer;
-
-use \Comodojo\Exception\RpcException;
+<?php namespace Comodojo\RpcServer\Request;
 
 /** 
  * tbw
@@ -20,21 +18,6 @@ use \Comodojo\Exception\RpcException;
  * THE SOFTWARE.
  */
  
-class RpcValues {
-    
-    public static $values = array(
-        "i4",
-        "int",
-        "double",
-        "boolean",
-        "base64",
-        "dateTime.iso8601",
-        "string",
-        "array",
-        "struct",
-        "nil",
-        "ex:nil",
-        "undefined"
-    );
-    
+class Processor {
+
 }

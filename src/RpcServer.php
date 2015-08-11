@@ -1,11 +1,15 @@
 <?php namespace Comodojo\RpcServer;
 
-use \Comodojo\Exception\RpcException;
-use \Comodojo\Exception\XmlrpcException;
-use \Exception;
+use \Comodojo\RpcServer\Component\Capabilities;
+use \Comodojo\RpcServer\Component\Methods;
+use \Comodojo\RpcServer\Component\Errors;
 use \Comodojo\Xmlrpc\XmlrpcEncoder;
 use \Comodojo\Xmlrpc\XmlrpcDecoder;
 use \Crypt_AES;
+use \Comodojo\Exception\RpcException;
+use \Comodojo\Exception\XmlrpcException;
+use \Exception;
+
 
 /** 
  * tbw
@@ -28,7 +32,7 @@ use \Crypt_AES;
  */
  
  class RpcServer {
-    
+
     private $capabilities = null;
     
     private $methods = null;
@@ -37,11 +41,11 @@ use \Crypt_AES;
     
     public function __construct($protocol) {
         
-        $this->capabilities = new RpcCapabilities();
+        $this->capabilities = new Capabilities();
         
-        $this->methods = new RpcMethods();
+        $this->methods = new Methods();
         
-        $this->errors = new RpcErrors();
+        $this->errors = new Errors();
         
         self::setIntrospectionMethods($this->methods);
         
@@ -49,11 +53,22 @@ use \Crypt_AES;
         
     }
     
-    public function addCapability() {}
+    public function capabilites() {
+
+        return $this->capabilities;
+
+    }
     
-    public function addMethod() {}
+    public function methods() {
+
+        return $this->methods;
+
+    }
     
-    public function addError() {}
+    public function errors() {
+
+        return $this->errors;
+    }
     
     public function serve() {}
     

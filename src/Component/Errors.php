@@ -1,4 +1,4 @@
-<?php namespace Comodojo\RpcServer;
+<?php namespace Comodojo\RpcServer\Component;
 
 /** 
  * tbw
@@ -18,7 +18,7 @@
  * THE SOFTWARE.
  */
  
-class RpcError {
+class Errors {
 
     private $rpc_errors = array(
         -32700 => "Parse error",

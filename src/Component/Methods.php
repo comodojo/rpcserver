@@ -1,4 +1,4 @@
-<?php namespace Comodojo\RpcServer;
+<?php namespace Comodojo\RpcServer\Component;
 
 /** 
  * tbw
@@ -18,22 +18,21 @@
  * THE SOFTWARE.
  */
  
-class RpcCapabilities {
+class Methods {
 
-    private $rpc_capabilities = array();
+    private $methods = array();
     
-    final public function add($capability, $specUrl, $specVersion) {
+    final public function add(\Comodojo\RpcServer\RpcMethod $method) {
         
-        if ( array_key_exists($capability, $this->rpc_capabilities) ) {
+        $name = $method->getName();
+
+        if ( array_key_exists($name, $this->methods) ) {
             
             return false;
             
         } else {
             
-            $this->rpc_capabilities[$capability] = array(
-                'specUrl' => $specUrl,
-                'specVersion' => $specVersion
-            );
+            $this->methods[$name] = $method;
             
             return true;
             
@@ -41,11 +40,11 @@ class RpcCapabilities {
         
     }
     
-    final public function delete($capability) {
+    final public function delete($name) {
         
-        if ( array_key_exists($code, $this->rpc_capabilities) ) {
+        if ( array_key_exists($name, $this->methods) ) {
             
-            unset($this->rpc_capabilities[$capability]);
+            unset($this->methods[$name]);
             
             return true;
             
@@ -59,7 +58,7 @@ class RpcCapabilities {
     
     final public function get() {
         
-        return $this->rpc_capabilities;
+        return $this->methods();
         
     }
     

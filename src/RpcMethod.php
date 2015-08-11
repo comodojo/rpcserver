@@ -1,7 +1,5 @@
 <?php namespace Comodojo\RpcServer;
 
-use \Comodojo\RpcServer\RpcValues;
-
 /** 
  * tbw
  * 
@@ -21,6 +19,21 @@ use \Comodojo\RpcServer\RpcValues;
  */
  
 class RpcMethod {
+
+    public static $rpcvalues = array(
+        "i4",
+        "int",
+        "double",
+        "boolean",
+        "base64",
+        "dateTime.iso8601",
+        "string",
+        "array",
+        "struct",
+        "nil",
+        "ex:nil",
+        "undefined"
+    );
     
     private $name = null;
     
@@ -74,7 +87,7 @@ class RpcMethod {
     
     public function setReturnType($type) {
         
-        if ( !in_array($type, RpcValues::$values) ) throw new Exception("RPC method exception: invalid return type");
+        if ( !in_array($type, self::$rpcvalues) ) throw new Exception("RPC method exception: invalid return type");
         
         $this->return_type = $type;
         
@@ -90,7 +103,7 @@ class RpcMethod {
     
     public function addParameter($type, $parameter = null) {
         
-        if ( !in_array($type, RpcValues::$values) ) throw new Exception("RPC method exception: invalid parameter type");
+        if ( !in_array($type, self::$rpcvalues) ) throw new Exception("RPC method exception: invalid parameter type");
         
         if ( empty($parameter) ) {
             
