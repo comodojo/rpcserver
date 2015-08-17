@@ -22,7 +22,7 @@ class GetCapabilities {
 
     final public static function execute($params) {
         
-        return $params->getCapabilities();
+        return $params->capabilities()->get();
         
     }
 

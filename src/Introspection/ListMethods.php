@@ -22,7 +22,7 @@ class ListMethods {
 
     final public static function execute($params) {
         
-        $methods = $params->getMethods();
+        $methods = $params->methods()->get();
         
         return array_keys($methods);
         

@@ -56,9 +56,23 @@ class Methods {
         
     }
     
-    final public function get() {
+    final public function get($method = null) {
         
-        return $this->methods();
+        if ( empty($method) ) {
+            
+            $return = $this->methods();
+            
+        } else if ( array_key_exists($method, $this->methods) ) {
+            
+            $return = $this->methods[$method];
+        
+        } else {
+            
+            $return = null;
+            
+        }
+        
+        return $return;
         
     }
     

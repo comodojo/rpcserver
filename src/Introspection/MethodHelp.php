@@ -26,7 +26,7 @@ class MethodHelp {
         
         $asked_method = $params->get(0);
         
-        $method = $params->getMethod($asked_method);
+        $method = $params->methods()->get($asked_method);
         
         if ( is_null($method) ) throw new RpcException("Method not found", -32601);
         

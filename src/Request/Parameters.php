@@ -1,5 +1,9 @@
 <?php namespace Comodojo\RpcServer\Request;
 
+use \Comodojo\RpcServer\Component\Capabilities;
+use \Comodojo\RpcServer\Component\Methods;
+use \Comodojo\RpcServer\Component\Errors;
+
 /** 
  * tbw
  * 
@@ -26,6 +30,18 @@ class Parameters {
     
     private $methods = array();
     
+    private $errors = array();
+    
+    public function __construct(Capabilities $capabilities, Methods $methods, Errors $errors) {
+        
+        $this->capabilities = $capabilities;
+        
+        $this->methods = $methods;
+        
+        $this->errors = $errors;
+        
+    }
+    
     public function setParameters($parameters) {
         
         $this->parameters = $parameters;
@@ -34,61 +50,41 @@ class Parameters {
         
     }
     
-    public function setCapabilities($capabilities) {
+    final public function capabilities() {
         
-        $this->capabilities = $capabilities;
-        
-        return $this;
+        return $this->capabilities;
         
     }
     
-    public function setMethods($methods) {
-        
-        $this->methods = $methods;
-        
-        return $this;
-        
-    }
-    
-    public function setErrors($errors) {
-        
-        $this->errors = $errors;
-        
-        return $this;
-        
-    }
-    
-    public function get($parameter) {
-        
-        if ( array_key_exists($parameter, $this->parameters) ) return $this->parameters[$parameter];
-        
-        else return null;
-        
-    }
-    
-    public function getParameters() {
-        
-        return $this->parameters;
-        
-    }
-    
-    public function getMethods() {
+    final public function methods() {
         
         return $this->methods;
         
     }
     
-    public function getMethod($method) {
+    final public function errors() {
         
-        if ( array_key_exists($method, $this->methods) ) return $this->methods[$method];
-        
-        else return null;
+        return $this->errors;
         
     }
     
-    public function getCapabilities() {
+    public function get($parameter = null) {
         
-        return $this->capabilities;
+        if ( empty($parameter) ) {
+            
+            $return = $this->parameters;
+            
+        } else if ( array_key_exists($parameter, $this->parameters) ) {
+            
+            $return = $this->parameters[$parameter];
+            
+        } else {
+            
+            $return = null;
+        
+        }
+        
+        return $return;
         
     }
     

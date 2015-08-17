@@ -19,7 +19,7 @@
  */
  
 class RpcMethod {
-
+    
     public static $rpcvalues = array(
         "i4",
         "int",
@@ -67,6 +67,18 @@ class RpcMethod {
         
     }
     
+    public function getCallback() {
+        
+        return $this->callback;
+        
+    }
+    
+    public function getMethod() {
+        
+        return $this->method;
+        
+    }
+    
     public function setDescription($description = null) {
         
         if ( empty($description) ) $this->description = null;
@@ -101,39 +113,33 @@ class RpcMethod {
         
     }
     
-    public function addParameter($type, $parameter = null) {
+    public function addParameter($type, $name) {
         
         if ( !in_array($type, self::$rpcvalues) ) throw new Exception("RPC method exception: invalid parameter type");
         
-        if ( empty($parameter) ) {
-            
-            $this->parameters[] = $type;
-            
-        } else {
-          
-            if ( !is_string($parameter) ) throw new Exception("RPC method exception: invalid parameter name");
-            
-            $this->parameters[$parameter] = $type;
-            
-        }
+        if ( empty($name) ) throw new Exception("RPC method exception: invalid parameter name");
+        
+        $this->parameters[$parameter] = $type;
         
         return $this;
         
     }
     
-    public function deleteParameter($parameter) {
+    public function deleteParameter($name) {
         
-        if ( !in_array($parameter, $this->parameters) ) throw new Exception("RPC method exception: cannot find parameter");
+        if ( !in_array($name, $this->parameters) ) throw new Exception("RPC method exception: cannot find parameter");
         
-        unset($this->parameters[$parameter]);
+        unset($this->parameters[$name]);
         
         return $this;
         
     }
     
-    public function getParameters() {
+    public function getParameters($method = 'ASSOC') {
         
-        return $this->parameters;
+        if ( $method == 'NUMERIC' ) return array_values($this->parameters);
+        
+        else return $this->parameters;
         
     }
     
@@ -168,6 +174,5 @@ class RpcMethod {
         return empty($method) ? is_callable($callback) : is_callable($callback, $method);
         
     }
-    
     
 }

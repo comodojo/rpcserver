@@ -18,6 +18,21 @@
  * THE SOFTWARE.
  */
  
-class Processor {
+class Call {
 
+    private $method;
+    
+    private $parameters;
+    
+    private $id;
+    
+    public function __construct($method, Parameters $parameters, $id) {
+        
+         // check if json payload meets 2.0 standard
+			
+			//if ( !isset($pre_decoded['jsonrpc']) || $pre_decoded['jsonrpc'] != '2.0' ) throw new RpcException("Parse error", -32700);
+        
+        
+    }
+    
 }
