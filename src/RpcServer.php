@@ -184,11 +184,9 @@ use \Exception;
             
             else throw new Exception('Invalid or unsupported RPC protocol');
             
-            $response = $this->can($result, false);
-            
         } catch (RpcException $re) {
             
-            $response = $this->can($result, true);
+            return $this->can($re, true);
             
         } catch (Exception $e) {
             
@@ -196,7 +194,7 @@ use \Exception;
             
         }
         
-        return $response;
+        return $this->can($result, false);
         
     }
     
@@ -262,25 +260,23 @@ use \Exception;
             
             try {
 
-                $encoded = $error ? $encoder->encodeError($response['code'], $response['message']) : $encoder->encodeResponse($response);
+                $encoded = $error ? $encoder->encodeError($re->getCode(), $response->getMessage()) : $encoder->encodeResponse($response);
                 
             } catch ( XmlrpcException $xe ) {
                 
-                throw new RpcException("Application error", -32500);
-                
+                $encoded = $encoder->encodeError(-32500, "Application error");
+
             }
-            
-        } else if ( $this->protocol == 'json' ) {
-            
-            $encoded = is_null($response) ? null : json_encode($response, JSON_NUMERIC_CHECK);
             
         } else {
             
-            throw new RpcException("Transport error", -32300);
+            // json will not return any RpcException; errors (in case) are handled directly by processor
+            
+            $encoded = is_null($response) ? null : json_encode($response, JSON_NUMERIC_CHECK);
             
         }
         
-        if ( $this->request_is_encrypted ) {
+        if ( $this->request_is_encrypted /* && !empty($encoded) */ ) {
             
             $aes = new Crypt_AES();
             

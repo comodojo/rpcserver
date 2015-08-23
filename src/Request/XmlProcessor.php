@@ -1,6 +1,7 @@
 <?php namespace Comodojo\RpcServer\Request;
 
 use \Comodojo\RpcServer\Request\Parameters;
+use \Comodojo\Exception\RpcException;
 
 /** 
  * tbw
@@ -38,11 +39,13 @@ class XmlProcessor {
         
             list($this->method, $request_parameters) = self::preprocessRequest($payload);
             
-            $this->parameters->setParameters($request_parameters);
-            
             $this->registered_method = $this->checkRequestSustainability();
             
             $this->checkRequestConsistence();
+            
+            $parameters = self::matchParameters($request_parameters);
+            
+            $this->parameters->setParameters($parameters);
         
         } catch (RpcException $re) {
             
@@ -62,7 +65,27 @@ class XmlProcessor {
         
         $method = $this->registered_method->getMethod();
         
-        $return = empty($method) ? call_user_func($callback, $this->parameters) : call_user_func(Array($callback, $method), $this->parameters);
+        set_error_handler( 
+
+            function($severity, $message, $file, $line) {
+
+                throw new RpcException('Internal error', -32603);
+
+            }
+
+        );
+
+        try {
+        
+            $return = empty($method) ? call_user_func($callback, $this->parameters) : call_user_func(Array($callback, $method), $this->parameters);
+
+        } catch (RpcException $re) {
+
+            throw $re;
+            
+        }
+
+        restore_error_handler();
         
         return $return;
         
@@ -72,7 +95,7 @@ class XmlProcessor {
     
         try {
             
-            $processor = new Processor($payload, $parameters);
+            $processor = new XmlProcessor($payload, $parameters);
             
             $return = $processor->run();
             
@@ -109,6 +132,22 @@ class XmlProcessor {
         $provided_parameters_count = count($this->parameters->get());
         
         if ( $provided_parameters_count != $requested_parameters_count ) throw new RpcException("Invalid params", -32602);
+        
+    }
+    
+    private static function matchParameters($provided, $method) {
+        
+        $parameters = array();
+        
+        $requested_parameters = $method->getParameters('NUMERIC');
+        
+        foreach( $provided as $index => $parameter ) {
+            
+            $parameters[$requested_parameters[$index]] = $parameter;
+            
+        }
+        
+        return $parameters;
         
     }
     
