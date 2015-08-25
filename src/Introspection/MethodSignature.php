@@ -30,7 +30,9 @@ class MethodSignature {
         
         if ( is_null($method) ) throw new RpcException("Method not found", -32601);
         
-        return $method->getSignature();
+        $signatures = $method->getSignatures();
+
+        return sizeof($signatures) == 1 ? $signatures[0] : $signatures;
         
     }
 

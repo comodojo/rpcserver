@@ -1,5 +1,7 @@
 <?php namespace Comodojo\RpcServer;
 
+use \Exception;
+
 /** 
  * tbw
  * 
@@ -43,9 +45,9 @@ class RpcMethod {
     
     private $description = null;
     
-    private $parameters = array();
-    
-    private $return_type = 'undefined';
+    private $signatures = array();
+
+    private $current_signature = null;
 
     public function __construct($name, $callback, $method = null) {
         
@@ -58,6 +60,8 @@ class RpcMethod {
         $this->callback = $callback;
         
         $this->method = $method;
+
+        $this->addSignature();
         
     }
     
@@ -91,25 +95,104 @@ class RpcMethod {
         
     }
     
-    public function getDescription($description) {
+    public function getDescription() {
         
         return $this->description;
         
+    }
+
+    public function addSignature() {
+
+        $signature = array(
+            "PARAMETERS" => array(),
+            "RETURNTYPE" => 'undefined'
+        );
+
+        array_push($this->signatures, $signature);
+
+        $this->current_signature = max(array_keys($this->signatures));
+
+        return $this;
+
+    }
+
+    public function getSignatures($compact = true) {
+
+        if ( $compact ) {
+
+            $signatures = array();
+
+            foreach ($this->signatures as $signature) {
+                
+                $signatures[] = array_merge(array($signature["RETURNTYPE"]),array_values($signature["PARAMETERS"]));
+
+            }
+
+            return $signatures;
+
+        } else {
+
+            return $this->signatures;
+
+        }
+
+    }
+
+    public function getSignature($compact = true) {
+
+        if ( $compact ) {
+
+            return array_merge(array($this->signatures[$this->current_signature]["RETURNTYPE"]),array_values($this->signatures[$this->current_signature]["PARAMETERS"]));
+
+        } else {
+
+            return $this->signatures[$this->current_signature];
+
+        }
+        
+    }
+
+    public function deleteSignature($signature) {
+
+        if ( !is_integer($signature) || !isset($this->signatures[$signature]) ) {
+
+            throw new Exception("RPC method exception: invalid signature reference");
+
+        }
+
+        unset($this->signatures[$signature]);
+
+        return true;
+
+    }
+
+    public function selectSignature($signature) {
+
+        if ( !is_integer($signature) || !isset($this->signatures[$signature]) ) {
+
+            throw new Exception("RPC method exception: invalid signature reference");
+
+        }
+
+        $this->current_signature = $signature;
+
+        return $this;
+
     }
     
     public function setReturnType($type) {
         
         if ( !in_array($type, self::$rpcvalues) ) throw new Exception("RPC method exception: invalid return type");
         
-        $this->return_type = $type;
-        
+        $this->signatures[$this->current_signature]["RETURNTYPE"] = $type;
+
         return $this;
         
     }
     
     public function getReturnType() {
         
-        return $this->return_type;
+        return $this->signatures[$this->current_signature]["RETURNTYPE"];
         
     }
     
@@ -119,17 +202,17 @@ class RpcMethod {
         
         if ( empty($name) ) throw new Exception("RPC method exception: invalid parameter name");
         
-        $this->parameters[$parameter] = $type;
-        
+        $this->signatures[$this->current_signature]["PARAMETERS"][$name] = $type;
+
         return $this;
         
     }
     
     public function deleteParameter($name) {
         
-        if ( !in_array($name, $this->parameters) ) throw new Exception("RPC method exception: cannot find parameter");
+        if ( !array_key_exists($name, $this->signatures[$this->current_signature]["PARAMETERS"]) ) throw new Exception("RPC method exception: cannot find parameter");
         
-        unset($this->parameters[$name]);
+        unset($this->signatures[$this->current_signature]["PARAMETERS"][$name]);
         
         return $this;
         
@@ -137,19 +220,9 @@ class RpcMethod {
     
     public function getParameters($method = 'ASSOC') {
         
-        if ( $method == 'NUMERIC' ) return array_values($this->parameters);
+        if ( $method == 'NUMERIC' ) return array_values($this->signatures[$this->current_signature]["PARAMETERS"]);
         
-        else return $this->parameters;
-        
-    }
-    
-    public function getSignature() {
-        
-        $signature = array($this->return_type);
-        
-        foreach($this->parameters as $parameter => $type) $signature[] = $type;
-        
-        return $signature;
+        else return $this->signatures[$this->current_signature]["PARAMETERS"];
         
     }
     

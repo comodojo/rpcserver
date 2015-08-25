@@ -28,6 +28,8 @@ class JsonProcessor {
     private $requests = array();
     
     private $results = array();
+
+    private $selected_signature = null;
     
     public function __construct($payload, Parameters $parameters) {
         
@@ -147,9 +149,9 @@ class JsonProcessor {
             
             $registered_method = $this->checkRequestSustainability($requested_method);
             
-            $this->checkRequestConsistence($registered_method, $parameters);
+            $selected_signature = $this->checkRequestConsistence($registered_method, $parameters);
             
-            if ( is_array($parameters) ) $parameters = self::matchParameters($parameters, $registered_method);
+            if ( is_array($parameters) ) $parameters = self::matchParameters($parameters, $registered_method, $selected_signature);
             
             $this->parameters->setParameters($parameters);
             
@@ -222,11 +224,11 @@ class JsonProcessor {
         
     }
     
-    private static function matchParameters($provided, $method) {
+    private static function matchParameters($provided, $method, $selected_signature) {
         
         $parameters = array();
         
-        $requested_parameters = $method->getParameters('NUMERIC');
+        $requested_parameters = $method->selectSignature($selected_signature)->getParameters('NUMERIC');
         
         foreach( $provided as $index => $parameter ) {
             
@@ -249,29 +251,41 @@ class JsonProcessor {
     }
     
     private function checkRequestConsistence($registered_method, $parameters) {
-        
-        if ( is_array($parameters) ) {
+
+        $signatures = $this->registered_method->getSignatures(false);
+
+        foreach ($signatures as $num => $signature) {
             
-            $requested_parameters = $registered_method->getParameters();
-            
-            foreach( $parameters as $parameter => $value ) {
-                
-                if ( !isset($requested_parameters[$parameter]) ) throw new RpcException("Invalid params", -32602);
-                
-            }
-            
-        } else {
-            
-            $requested_parameters = $registered_method->getParameters('NUMERIC');
-            
-            $provided_parameters_count = count($parameters->get());
-            
-            $requested_parameters_count = count( $requested_parameters );
-            
-            if ( $provided_parameters_count != $requested_parameters_count ) throw new RpcException("Invalid params", -32602);
-            
+            if ( self::checkSignatureMatch($parameters, $signature["PARAMETERS"]) === true ) return $num;
+
         }
+
+        throw new RpcException("Invalid params", -32602);
         
+    }
+
+    private static function checkSignatureMatch($provided, $requested) {
+
+        if ( is_object($provided) ) {
+
+            foreach ($provided as $parameter->$value) {
+            
+                if ( !isset($requested[$parameter]) ) return false;
+
+            }    
+
+        } else {
+
+            $provided_parameters_count = count( $parameters->get() );
+
+            $requested_parameters_count = count( $provided );
+
+            if ( $provided_parameters_count != $requested_parameters_count ) return false;
+
+        }
+
+        return true;
+
     }
     
 }

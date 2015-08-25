@@ -30,6 +30,8 @@ class XmlProcessor {
     private $parameters;
     
     private $registered_method;
+
+    private $selected_signature = null;
     
     public function __construct($payload, Parameters $parameters) {
         
@@ -41,9 +43,9 @@ class XmlProcessor {
             
             $this->registered_method = $this->checkRequestSustainability();
             
-            $this->checkRequestConsistence();
+            $this->selected_signature = $this->checkRequestConsistence();
             
-            $parameters = self::matchParameters($request_parameters);
+            $parameters = self::matchParameters($request_parameters, $this->registered_method, $this->selected_signature);
             
             $this->parameters->setParameters($parameters);
         
@@ -124,22 +126,31 @@ class XmlProcessor {
     }
     
     private function checkRequestConsistence() {
-        
-        $requested_parameters = $this->registered_method->getParameters('NUMERIC');
-        
-        $requested_parameters_count = count( $requested_parameters_count );
-        
+
+        $signatures = $this->registered_method->getSignatures(false);
+
         $provided_parameters_count = count($this->parameters->get());
-        
-        if ( $provided_parameters_count != $requested_parameters_count ) throw new RpcException("Invalid params", -32602);
+
+        foreach ($signatures as $num=>$signature) {
+            
+            $requested_parameters = array_values($signature["PARAMETERS"]);
+
+            $requested_parameters_count = count( $requested_parameters );
+
+            if ( $provided_parameters_count == $requested_parameters_count ) return $num;
+
+        }
+
+        throw new RpcException("Invalid params", -32602);
         
     }
     
-    private static function matchParameters($provided, $method) {
+    private static function matchParameters($provided, $method, $selected_signature) {
         
         $parameters = array();
-        
-        $requested_parameters = $method->getParameters('NUMERIC');
+
+        $requested_parameters = $method->selectSignature($selected_signature)
+            ->getParameters('NUMERIC');
         
         foreach( $provided as $index => $parameter ) {
             

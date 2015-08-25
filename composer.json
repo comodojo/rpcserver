@@ -9,7 +9,7 @@
         "xmlrpc",
         "jsonrpc"
     ],
-    "homepage": "http://comodojo.org",
+    "homepage": "https://comodojo.org",
      "support": {
         "issues": "https://github.com/comodojo/rpcserver/issues"
     },
@@ -22,13 +22,13 @@
     ],
     "autoload": {
         "psr-4": {
-            "Comodojo\\RpcClient\\": "src"
+            "Comodojo\\RpcServer\\": "src"
         }
     },
     "require": {
         "php": ">=5.3.0",
-        "comodojo/xmlrpc": "1.2.*",
-        "comodojo/exceptions": "1.*",
+        "comodojo/xmlrpc": "1.1.*",
+        "comodojo/exceptions": "@stable",
         "phpseclib/phpseclib": "0.3.*"
     },
     "require-dev": {
