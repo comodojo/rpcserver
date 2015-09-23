@@ -60,7 +60,7 @@ class Methods {
         
         if ( empty($method) ) {
             
-            $return = $this->methods();
+            $return = $this->methods;
             
         } else if ( array_key_exists($method, $this->methods) ) {
             

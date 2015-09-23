@@ -178,9 +178,9 @@ use \Exception;
             
             $payload = $this->uncan($this->payload);
             
-            if ( $this->protocol == self::XMLRPC ) $result = XmlProcessor::process($payload, $parameters);
+            if ( $this->protocol == self::XMLRPC ) $result = XmlProcessor::process($payload, $parameters_object);
             
-            else if ( $this->protocol == self::JSONRPC ) $result = JsonProcessor::process($payload, $parameters);
+            else if ( $this->protocol == self::JSONRPC ) $result = JsonProcessor::process($payload, $parameters_object);
             
             else throw new Exception('Invalid or unsupported RPC protocol');
             
@@ -204,7 +204,7 @@ use \Exception;
         
         if ( empty($payload) ) throw new RpcException("Invalid Request", -32600);
         
-        if ( substr($attributes,0,27) == 'comodojo_encrypted_request-' ) {
+        if ( substr($payload,0,27) == 'comodojo_encrypted_request-' ) {
             
             if ( empty($this->encrypt) ) throw new RpcException("Transport error", -32300);
             
@@ -226,7 +226,7 @@ use \Exception;
             
             try {
 
-                $decoded = $decoder->decodeCall($received);
+                $decoded = $decoder->decodeCall($payload);
                 
             } catch ( XmlrpcException $xe ) {
                 
@@ -236,7 +236,7 @@ use \Exception;
             
         } else if ( $this->protocol == 'json' ) {
             
-            $pre_decoded = json_decode($received, false /*DO RAW conversion*/);
+            $pre_decoded = json_decode($payload, false /*DO RAW conversion*/);
 			
 			if ( is_null($decoded) ) throw new RpcException("Parse error", -32700);
             
@@ -307,7 +307,7 @@ use \Exception;
         $method_help = RpcMethod::create("system.methodHelp", "\Comodojo\RpcServer\Introspection\MethodHelp", "execute")
             ->setDescription("Returns help text if defined for the method passed, otherwise returns an empty string")
             ->setReturnType('string')
-            ->addParameter('string');
+            ->addParameter('string','method');
             
         $methods->add($method_help);
         
@@ -315,14 +315,14 @@ use \Exception;
             ->setDescription("Returns an array of known signatures (an array of arrays) for the method name passed. 
         If no signatures are known, returns a none-array (test for type != array to detect missing signature)")
             ->setReturnType('array')
-            ->addParameter('string');
+            ->addParameter('string','method');
         
         $methods->add($method_signature);
             
         $multicall = RpcMethod::create("system.multicall", "\Comodojo\RpcServer\Reserved\Multicall", "execute")
             ->setDescription("Boxcar multiple RPC calls in one request. See http://www.xmlrpc.com/discuss/msgReader\$1208 for details")
             ->setReturnType('array')
-            ->addParameter('array');
+            ->addParameter('array','requests');
             
         $methods->add($multicall);
     

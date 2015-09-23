@@ -117,7 +117,7 @@ class XmlProcessor {
 
     private function checkRequestSustainability() {
         
-        $method = $this->parameters->methods->get($this->method);
+        $method = $this->parameters->methods()->get($this->method);
         
         if ( is_null($method) ) throw new RpcException("Method not found", -32601);
         
