@@ -2,22 +2,22 @@
 
 class RpcMethodTest extends \PHPUnit_Framework_TestCase {
 
-	public function testNewMethod() {
+        public function testNewMethod() {
 
-		$method = \Comodojo\RpcServer\RpcMethod::create("test.sum", function($params) {
+                $method = \Comodojo\RpcServer\RpcMethod::create("test.sum", function($params) {
 
-			$a = $params->get('a');
+                        $a = $params->get('a');
 
-			$b = $params->get('b');
+                        $b = $params->get('b');
 
-			return (is_null($a) || is_null($b)) ? '42' : ($a + $b);
+                        return (is_null($a) || is_null($b)) ? '42' : ($a + $b);
 
-		})  ->setDescription("Sum two integers")
-			->setReturnType('string')
-			->addSignature()
-			->addParameter('int','a')
-			->addParameter('int','b')
-			->setReturnType('int');
+                })  ->setDescription("Sum two integers")
+                        ->setReturnType('string')
+                        ->addSignature()
+                        ->addParameter('int','a')
+                        ->addParameter('int','b')
+                        ->setReturnType('int');
 
         $this->assertInstanceOf('\Comodojo\RpcServer\RpcMethod', $method);
 
@@ -73,6 +73,6 @@ class RpcMethodTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertCount(1,$signatures);
 
-	}
+        }
 
 }

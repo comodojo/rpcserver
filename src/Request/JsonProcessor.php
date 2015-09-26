@@ -34,7 +34,7 @@ class JsonProcessor {
     public function __construct($payload, Parameters $parameters) {
         
         $this->parameters = $parameters;
-        
+
         $this->requests = self::preprocessJsonPayload($payload);
         
     }
@@ -45,7 +45,9 @@ class JsonProcessor {
             
             if ( isset($request['ERROR_CODE']) && isset($request['ERROR_MESSAGE']) ) {
                 
-                self::packJsonError($request['ERROR_CODE'], $request['ERROR_MESSAGE'], $request['ID']);
+                $result = self::packJsonError($request['ERROR_CODE'], $request['ERROR_MESSAGE'], $request['ID']);
+
+                if ( !is_null($result) ) $this->results[] = $result;
                 
             } else {
                 
@@ -53,11 +55,15 @@ class JsonProcessor {
                 
                     $response = $this->runSingleRequest($request['METHOD'], $request['PARAMETERS']);
                     
-                    self::packJsonSuccess($response, $request['ID']);
+                    $result = self::packJsonSuccess($response, $request['ID']);
+
+                    if ( !is_null($result) ) $this->results[] = $result;
                     
                 } catch (RpcException $re) {
                     
-                    self::packJsonError($re->getCode(), $re->getMessage(), $request['ID']);
+                    $result = self::packJsonError($re->getCode(), $re->getMessage(), $request['ID']);
+
+                    if ( !is_null($result) ) $this->results[] = $result;
                     
                 } catch (Exception $e) {
             
@@ -70,7 +76,7 @@ class JsonProcessor {
 
         } 
         
-        return $this->results;
+        return count($this->results) == 1 ? $this->results[0] : $this->results;
         
     }
     
@@ -119,10 +125,14 @@ class JsonProcessor {
         // check for required parameters
         
         if (
-            !isset($request['jsonrpc']) || 
-            !isset($request['method']) ||  
-            $request['jsonrpc'] != '2.0' || 
-            empty($request['method'])
+            !property_exists($request, 'jsonrpc') ||
+            !property_exists($request, 'method') ||
+            $request->jsonrpc != '2.0' || 
+            empty($request->method)
+            //!isset($request->jsonrpc) || 
+            //!isset($request->method) ||  
+            //$request['jsonrpc'] != '2.0' || 
+            //empty($request['method'])
         ) {
             
             return array(
@@ -136,9 +146,10 @@ class JsonProcessor {
         // parse request's components
         
         return array(
-            'METHOD' => $request['method'],
-            'PARAMETERS' => !isset($request['params']) ? array() : $request['params'],
-            'ID' => !isset($request['id']) ? null : $request['id']
+            'METHOD' => $request->method,
+            //'PARAMETERS' => !isset($request['params']) ? array() : $request['params'],
+            'PARAMETERS' => property_exists($request, 'params') ? $request->params : array(),
+            'ID' => property_exists($request, 'id') ? $request->id : null
         );
         
     }
@@ -147,7 +158,7 @@ class JsonProcessor {
         
         try {
             
-            $registered_method = $this->checkRequestSustainability($requested_method);
+            $registered_method = $this->checkRequestSustainability($request_method);
             
             $selected_signature = $this->checkRequestConsistence($registered_method, $parameters);
             
@@ -197,7 +208,7 @@ class JsonProcessor {
         
         if ( !is_null($id) ) {
                 
-            $this->results[] = array(
+            array(
                 'jsonrpc' => '2.0',
                 'error' => array(
                     'code' => $code,
@@ -214,7 +225,7 @@ class JsonProcessor {
         
         if ( !is_null($id) ) {
                 
-            $this->results[] = array(
+            return array(
                 'jsonrpc' => '2.0',
                 'result' => $result,
                 'id' => $id
@@ -228,11 +239,13 @@ class JsonProcessor {
         
         $parameters = array();
         
-        $requested_parameters = $method->selectSignature($selected_signature)->getParameters('NUMERIC');
+        $requested_parameters = $method->selectSignature($selected_signature)->getParameters();
         
+        $requested_parameters_keys = array_keys($requested_parameters);
+
         foreach( $provided as $index => $parameter ) {
             
-            $parameters[$requested_parameters[$index]] = $parameter;
+            $parameters[$requested_parameters_keys[$index]] = $parameter;
             
         }
         
@@ -242,7 +255,7 @@ class JsonProcessor {
     
     private function checkRequestSustainability($request_method) {
         
-        $method = $this->parameters->methods->get($request_method);
+        $method = $this->parameters->methods()->get($request_method);
         
         if ( is_null($method) ) throw new RpcException("Method not found", -32601);
         
@@ -252,7 +265,7 @@ class JsonProcessor {
     
     private function checkRequestConsistence($registered_method, $parameters) {
 
-        $signatures = $this->registered_method->getSignatures(false);
+        $signatures = $registered_method->getSignatures(false);
 
         foreach ($signatures as $num => $signature) {
             
@@ -276,9 +289,9 @@ class JsonProcessor {
 
         } else {
 
-            $provided_parameters_count = count( $parameters->get() );
+            $provided_parameters_count = count( $provided );
 
-            $requested_parameters_count = count( $provided );
+            $requested_parameters_count = count( $requested );
 
             if ( $provided_parameters_count != $requested_parameters_count ) return false;
 

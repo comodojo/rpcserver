@@ -5,23 +5,23 @@ use \Comodojo\Xmlrpc\XmlrpcDecoder;
 use \Comodojo\RpcServer\Tests\CommonCases;
 use \Comodojo\RpcServer\RpcServer;
 
-class XmlRpcServerTest extends CommonCases {
+class XmlRpcCommonTest extends CommonCases {
 
-	protected function encodeRequest($method, $parameters) {
+    protected function encodeRequest($method, $parameters) {
 
-		$encoder = new XmlrpcEncoder();
+        $encoder = new XmlrpcEncoder();
 
-		return $encoder->encodeCall($method, $parameters);
+        return $encoder->encodeCall($method, $parameters);
 
-	}
+    }
 
-	protected function decodeResponse($received) {
+    protected function decodeResponse($received) {
 
-		$decoder = new XmlrpcDecoder();
+        $decoder = new XmlrpcDecoder();
 
         return $decoder->decodeResponse($received);
 
-	}
+    }
 
     protected function setUp() {
         

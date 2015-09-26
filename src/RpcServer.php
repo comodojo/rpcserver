@@ -236,9 +236,9 @@ use \Exception;
             
         } else if ( $this->protocol == 'json' ) {
             
-            $pre_decoded = json_decode($payload, false /*DO RAW conversion*/);
-			
-			if ( is_null($decoded) ) throw new RpcException("Parse error", -32700);
+            $decoded = json_decode($payload, false /*DO RAW conversion*/);
+            
+            if ( is_null($decoded) ) throw new RpcException("Parse error", -32700);
             
         } else {
             
@@ -260,7 +260,7 @@ use \Exception;
             
             try {
 
-                $encoded = $error ? $encoder->encodeError($re->getCode(), $response->getMessage()) : $encoder->encodeResponse($response);
+                $encoded = $error ? $encoder->encodeError($response->getCode(), $response->getMessage()) : $encoder->encodeResponse($response);
                 
             } catch ( XmlrpcException $xe ) {
                 
@@ -272,7 +272,7 @@ use \Exception;
             
             // json will not return any RpcException; errors (in case) are handled directly by processor
             
-            $encoded = is_null($response) ? null : json_encode($response, JSON_NUMERIC_CHECK);
+            $encoded = is_null($response) ? null : json_encode($response/*, JSON_NUMERIC_CHECK*/);
             
         }
         

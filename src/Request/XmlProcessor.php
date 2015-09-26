@@ -40,10 +40,10 @@ class XmlProcessor {
             $this->parameters = $parameters;
         
             list($this->method, $request_parameters) = self::preprocessRequest($payload);
-            
+
             $this->registered_method = $this->checkRequestSustainability();
             
-            $this->selected_signature = $this->checkRequestConsistence();
+            $this->selected_signature = $this->checkRequestConsistence($request_parameters);
             
             $parameters = self::matchParameters($request_parameters, $this->registered_method, $this->selected_signature);
             
@@ -97,7 +97,7 @@ class XmlProcessor {
     
         try {
             
-            $processor = new XmlProcessor($payload, $parameters);
+            $processor = new self($payload, $parameters);
             
             $return = $processor->run();
             
@@ -125,11 +125,11 @@ class XmlProcessor {
         
     }
     
-    private function checkRequestConsistence() {
+    private function checkRequestConsistence($provided_parameters) {
 
         $signatures = $this->registered_method->getSignatures(false);
 
-        $provided_parameters_count = count($this->parameters->get());
+        $provided_parameters_count = count($provided_parameters);
 
         foreach ($signatures as $num=>$signature) {
             
@@ -149,12 +149,13 @@ class XmlProcessor {
         
         $parameters = array();
 
-        $requested_parameters = $method->selectSignature($selected_signature)
-            ->getParameters('NUMERIC');
-        
+        $requested_parameters = $method->selectSignature($selected_signature)->getParameters();
+
+        $requested_parameters_keys = array_keys($requested_parameters);
+
         foreach( $provided as $index => $parameter ) {
             
-            $parameters[$requested_parameters[$index]] = $parameter;
+            $parameters[$requested_parameters_keys[$index]] = $parameter;
             
         }
         
