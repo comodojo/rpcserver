@@ -2,7 +2,6 @@
 
 use \Comodojo\RpcServer\Tests\CommonCases;
 use \Comodojo\RpcServer\RpcServer;
-use \Exception;
 
 class JsonRpcCommonTest extends CommonCases {
 

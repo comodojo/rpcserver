@@ -151,7 +151,7 @@ use \Exception;
         
     }
     
-    public function capabilites() {
+    public function capabilities() {
 
         return $this->capabilities;
 

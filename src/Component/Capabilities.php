@@ -43,7 +43,7 @@ class Capabilities {
     
     final public function delete($capability) {
         
-        if ( array_key_exists($code, $this->rpc_capabilities) ) {
+        if ( array_key_exists($capability, $this->rpc_capabilities) ) {
             
             unset($this->rpc_capabilities[$capability]);
             

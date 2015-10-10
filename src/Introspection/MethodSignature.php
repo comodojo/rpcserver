@@ -24,7 +24,7 @@ class MethodSignature {
 
     final public static function execute($params) {
         
-        $asked_method = $params->get(0);
+        $asked_method = $params->get('method');
         
         $method = $params->methods()->get($asked_method);
         
