@@ -168,4 +168,34 @@ abstract class CommonCases extends \PHPUnit_Framework_TestCase {
 
     }
 
+    public function testMethodNotFoundError() {
+
+        $request = $this->encodeRequest('test.sum', array(2,2));
+
+        $result = $this->server->setPayload($request)->serve();
+
+        if ( $this->server->getProtocol() == \Comodojo\RpcServer\RpcServer::XMLRPC ) {
+
+            $decoded = $this->decodeResponse($result);
+
+            $this->assertInternalType('array', $decoded);
+
+            $this->assertCount(2, $decoded);
+
+            $this->assertEquals(-32601, $decoded['faultCode']);
+
+            $this->assertEquals('Method not found', $decoded['faultString']);
+
+        } else {
+
+            $decoded = $this->decodeError($result);
+
+            $this->assertEquals(-32601, $decoded->code);
+
+            $this->assertEquals('Method not found', $decoded->message);
+
+        }
+
+    }
+
 }

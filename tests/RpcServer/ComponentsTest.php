@@ -64,4 +64,50 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
     }
 
+    public function testMethods() {
+
+        $met = new \Comodojo\RpcServer\Component\Methods();
+
+        $one = \Comodojo\RpcServer\RpcMethod::create("test.one", function($params) { return $params->get(); })
+            ->setDescription("Test Method One")
+            ->setReturnType('struct');
+
+        $two = \Comodojo\RpcServer\RpcMethod::create("test.two", function($params) { return $params->get(); })
+            ->setDescription("Test Method Two")
+            ->setReturnType('struct');
+
+        $add = $met->add($one);
+
+        $this->assertTrue($add);
+
+        $add = $met->add($two);
+
+        $this->assertTrue($add);
+
+        $get = $met->get('test.one');
+
+        $this->assertInstanceOf('\Comodojo\RpcServer\RpcMethod', $get);
+
+        $get = $met->get();
+
+        $this->assertInternalType('array', $get);
+
+        $this->assertCount(2, $get);
+
+        $this->assertInstanceOf('\Comodojo\RpcServer\RpcMethod', $get['test.one']);
+
+        $this->assertInstanceOf('\Comodojo\RpcServer\RpcMethod', $get['test.two']);
+
+        $delete = $met->delete('test.one');
+
+        $this->assertTrue($delete);
+
+        $get = $met->get();
+
+        $this->assertInternalType('array', $get);
+
+        $this->assertCount(1, $get);
+
+    }
+
 }

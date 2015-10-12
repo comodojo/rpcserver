@@ -50,7 +50,7 @@ use \Exception;
     
     private $encrypt = null;
     
-    private $encoding = null;
+    private $encoding = 'utf-8';
     
     private $request_is_encrypted = false;
     
@@ -202,7 +202,7 @@ use \Exception;
         
         $decoded = null;
         
-        if ( empty($payload) ) throw new RpcException("Invalid Request", -32600);
+        if ( empty($payload) || !is_string($payload) ) throw new RpcException("Invalid Request", -32600);
         
         if ( substr($payload,0,27) == 'comodojo_encrypted_request-' ) {
             
@@ -235,6 +235,12 @@ use \Exception;
             }
             
         } else if ( $this->protocol == 'json' ) {
+
+            if ( strtolower($this->encoding) != 'utf-8' ) {
+
+                $payload = mb_convert_encoding($payload, "UTF-8", strtoupper($this->encoding));
+
+            }
             
             $decoded = json_decode($payload, false /*DO RAW conversion*/);
             
@@ -257,6 +263,8 @@ use \Exception;
         if ( $this->protocol == 'xml' ) {
             
             $encoder = new XmlrpcEncoder();
+
+            $encoder->setEncoding($this->encoding);
             
             try {
 
@@ -269,6 +277,16 @@ use \Exception;
             }
             
         } else {
+
+            if ( strtolower($this->encoding) != 'utf-8' && !is_null($response) ) {
+
+                array_walk( $response, function (&$entry) {
+                    
+                    $entry = mb_convert_encoding($payload, strtoupper($this->encoding), "UTF-8");
+
+                });
+                
+            }
             
             // json will not return any RpcException; errors (in case) are handled directly by processor
             

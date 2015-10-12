@@ -34,6 +34,18 @@ class JsonRpcCommonTest extends CommonCases {
 
     }
 
+    protected function decodeError($received) {
+
+        $response = json_decode($received);
+
+        if ( $response->jsonrpc != "2.0" ) throw new Exception("Server replies with invalid jsonrpc version");
+
+        if ( $response->id != $this->current_id ) throw new Exception("Server replies wiht invalid ID");
+
+        return $response->error;
+
+    }
+
     protected function setUp() {
         
         $this->server = new RpcServer(RpcServer::JSONRPC);
@@ -43,6 +55,19 @@ class JsonRpcCommonTest extends CommonCases {
     protected function tearDown() {
 
         unset($this->server);
+
+    }
+
+    public function testNotification() {
+
+        $request = json_encode( array(
+            "jsonrpc" => "2.0",
+            "method" => 'system.listMethods'
+        ) );
+
+        $result = $this->server->setPayload($request)->serve();
+
+        $this->assertNull($result);
 
     }
 

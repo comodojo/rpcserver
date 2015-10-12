@@ -30,12 +30,14 @@ class JsonProcessor {
     private $results = array();
 
     private $selected_signature = null;
+
+    private $is_batch_request = false;
     
     public function __construct($payload, Parameters $parameters) {
         
         $this->parameters = $parameters;
 
-        $this->requests = self::preprocessJsonPayload($payload);
+        list($this->is_batch_request, $this->requests) = self::preprocessJsonPayload($payload);
         
     }
     
@@ -56,27 +58,37 @@ class JsonProcessor {
                     $response = $this->runSingleRequest($request['METHOD'], $request['PARAMETERS']);
                     
                     $result = self::packJsonSuccess($response, $request['ID']);
-
-                    if ( !is_null($result) ) $this->results[] = $result;
                     
                 } catch (RpcException $re) {
-                    
-                    $result = self::packJsonError($re->getCode(), $re->getMessage(), $request['ID']);
 
-                    if ( !is_null($result) ) $this->results[] = $result;
+                    $result = self::packJsonError($re->getCode(), $re->getMessage(), $request['ID']);
                     
                 } catch (Exception $e) {
             
                     throw $e;
             
                 }
+
+                if ( !is_null($result) ) $this->results[] = $result;
                 
             }
             
 
         } 
         
-        return count($this->results) == 1 ? $this->results[0] : $this->results;
+        if ( empty($this->results) ) {
+
+            return null;
+
+        } else if ( $this->is_batch_request ) {
+
+            return $this->results;
+
+        } else {
+
+            return $this->results[0];
+
+        }
         
     }
     
@@ -105,8 +117,12 @@ class JsonProcessor {
     private static function preprocessJsonPayload($payload) {
         
         $requests = array();
+
+        $is_batch = false;
         
         if ( is_array($payload) ) {
+
+            $is_batch = true;
             
             foreach($payload as $request) $requests[] = self::preprocessJsonRequest($request);
             
@@ -116,7 +132,7 @@ class JsonProcessor {
             
         }
         
-        return $requests;
+        return array($is_batch, $requests);
         
     }
     
@@ -125,14 +141,11 @@ class JsonProcessor {
         // check for required parameters
         
         if (
+            !is_object($request) ||
             !property_exists($request, 'jsonrpc') ||
             !property_exists($request, 'method') ||
             $request->jsonrpc != '2.0' || 
             empty($request->method)
-            //!isset($request->jsonrpc) || 
-            //!isset($request->method) ||  
-            //$request['jsonrpc'] != '2.0' || 
-            //empty($request['method'])
         ) {
             
             return array(
@@ -147,7 +160,6 @@ class JsonProcessor {
         
         return array(
             'METHOD' => $request->method,
-            //'PARAMETERS' => !isset($request['params']) ? array() : $request['params'],
             'PARAMETERS' => property_exists($request, 'params') ? $request->params : array(),
             'ID' => property_exists($request, 'id') ? $request->id : null
         );
@@ -208,7 +220,7 @@ class JsonProcessor {
         
         if ( !is_null($id) ) {
                 
-            array(
+            return array(
                 'jsonrpc' => '2.0',
                 'error' => array(
                     'code' => $code,
@@ -217,6 +229,10 @@ class JsonProcessor {
                 'id' => $id
             );
         
+        } else {
+
+            return null;
+
         }
         
     }
