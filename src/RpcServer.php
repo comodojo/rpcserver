@@ -172,7 +172,7 @@ use \Exception;
         
         $response = null;
         
-        $parameters_object = new Parameters($this->capabilities, $this->methods, $this->errors);
+        $parameters_object = new Parameters($this->capabilities, $this->methods, $this->errors, $this->protocol);
         
         try {
             

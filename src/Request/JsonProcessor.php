@@ -208,6 +208,12 @@ class JsonProcessor {
 
             throw $re;
             
+        } catch (Exception $e) {
+
+            restore_error_handler();
+
+            throw new RpcException('Internal error', -32603);
+            
         }
 
         restore_error_handler();

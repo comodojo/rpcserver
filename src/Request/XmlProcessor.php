@@ -2,6 +2,7 @@
 
 use \Comodojo\RpcServer\Request\Parameters;
 use \Comodojo\Exception\RpcException;
+use \Exception;
 
 /** 
  * tbw
@@ -83,7 +84,15 @@ class XmlProcessor {
 
         } catch (RpcException $re) {
 
+            restore_error_handler();
+
             throw $re;
+            
+        } catch (Exception $e) {
+
+            restore_error_handler();
+
+            throw new RpcException('Internal error', -32603);
             
         }
 

@@ -31,14 +31,18 @@ class Parameters {
     private $methods = array();
     
     private $errors = array();
+
+    private $protocol = null;
     
-    public function __construct(Capabilities $capabilities, Methods $methods, Errors $errors) {
+    public function __construct(Capabilities $capabilities, Methods $methods, Errors $errors, $protocol) {
         
         $this->capabilities = $capabilities;
         
         $this->methods = $methods;
         
         $this->errors = $errors;
+
+        $this->protocol = $protocol;
         
     }
     
@@ -66,6 +70,12 @@ class Parameters {
         
         return $this->errors;
         
+    }
+
+    final public function protocol() {
+
+        return $this->protocol;
+
     }
     
     public function get($parameter = null) {

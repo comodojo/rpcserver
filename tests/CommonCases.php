@@ -198,4 +198,45 @@ abstract class CommonCases extends \PHPUnit_Framework_TestCase {
 
     }
 
+    public function testCustomError() {
+
+        $method = \Comodojo\RpcServer\RpcMethod::create("test.exception", function($params) { 
+
+            $error = $params->errors()->get(-32602);
+
+            throw new \Comodojo\Exception\RpcException($error, -32602);
+            
+        })->setDescription("Test Method")
+        ->setReturnType('string');
+
+        $this->server->methods()->add($method);
+
+        $request = $this->encodeRequest('test.exception', array());
+
+        $result = $this->server->setPayload($request)->serve();
+
+        if ( $this->server->getProtocol() == \Comodojo\RpcServer\RpcServer::XMLRPC ) {
+
+            $decoded = $this->decodeResponse($result);
+
+            $this->assertInternalType('array', $decoded);
+
+            $this->assertCount(2, $decoded);
+
+            $this->assertEquals(-32602, $decoded['faultCode']);
+
+            $this->assertEquals('Invalid params', $decoded['faultString']);
+
+        } else {
+
+            $decoded = $this->decodeError($result);
+
+            $this->assertEquals(-32602, $decoded->code);
+
+            $this->assertEquals('Invalid params', $decoded->message);
+
+        }
+
+    }
+
 }
