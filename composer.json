@@ -27,7 +27,7 @@
     },
     "require": {
         "php": ">=5.3.0",
-        "comodojo/xmlrpc": "1.1.*",
+        "comodojo/xmlrpc": "^1.1",
         "comodojo/exceptions": "@stable",
         "phpseclib/phpseclib": "0.3.*"
     },

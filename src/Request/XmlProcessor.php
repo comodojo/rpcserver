@@ -173,8 +173,8 @@ class XmlProcessor {
     }
     
     private static function preprocessRequest($payload) {
-        
-        return ( is_array($payload[0]) ) ? array('system.multicall', $payload[0]) : array($payload[0], $payload[1]);
+
+        return ( is_array($payload[0]) ) ? array('system.multicall', array($payload)) : array($payload[0], $payload[1]);
         
     }
     

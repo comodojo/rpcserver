@@ -177,7 +177,7 @@ use \Exception;
         try {
             
             $payload = $this->uncan($this->payload);
-            
+
             if ( $this->protocol == self::XMLRPC ) $result = XmlProcessor::process($payload, $parameters_object);
             
             else if ( $this->protocol == self::JSONRPC ) $result = JsonProcessor::process($payload, $parameters_object);

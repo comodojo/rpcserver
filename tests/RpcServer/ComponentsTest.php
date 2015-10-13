@@ -54,7 +54,7 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals('Method not found', $get);
 
-        $get = $err->get(-31000);
+        $get = $err->get(-30000);
 
         $this->assertEquals('Unknown Error', $get);
 

@@ -30,7 +30,11 @@ class Errors {
         -32603 => "Internal error",
         -32500 => "Application error",
         -32400 => "System error",
-        -32300 => "Transport error"
+        -32300 => "Transport error",
+        // Predefined Comodojo Errors
+        -31000 => "Multicall is available only in XMLRPC",
+        -31001 => "Recursive system.multicall forbidden"
+
     );
     
     final public function add($code, $message) {
