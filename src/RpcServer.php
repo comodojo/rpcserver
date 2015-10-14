@@ -15,9 +15,7 @@ use \Exception;
 
 
 /** 
- * tbw
- *
- * It optionally supports a not standard encrypted transport
+ * The RpcServer main class.
  * 
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -40,10 +38,25 @@ use \Exception;
     
     const JSONRPC = 'json';
 
+    /**
+     * Capabilities collector
+     *
+     * @var \Comodojo\RpcServer\Component\Capabilities
+     */
     private $capabilities = null;
     
+    /**
+     * RpcMethods collector
+     *
+     * @var \Comodojo\RpcServer\Component\Methods
+     */
     private $methods = null;
     
+    /**
+     * Standard Rpc Errors collector
+     *
+     * @var \Comodojo\RpcServer\Component\Errors
+     */
     private $errors = null;
     
     private $payload = null;
@@ -58,6 +71,13 @@ use \Exception;
     
     private $supported_protocols = array('xml','json');
     
+    /**
+     * Class constructor
+     *
+     * @param string $protocol
+     *
+     * @throws \Exception
+     */
     public function __construct($protocol) {
         
         try {
@@ -82,6 +102,14 @@ use \Exception;
         
     }
     
+    /**
+     * Set RPC protocol (json or xml)
+     *
+     * @param string $protocol
+     *
+     * @return \Comodojo\RpcServer\RpcServer
+     * @throws \Exception
+     */
     final public function setProtocol($protocol) {
         
         if ( empty($protocol) || !in_array($protocol, $this->supported_protocols) ) throw new Exception('Invalid or unsupported RPC protocol');
@@ -92,6 +120,11 @@ use \Exception;
         
     }
     
+    /**
+     * Get RPC protocol
+     *
+     * @return string
+     */
     final public function getProtocol() {
         
         return $this->protocol;
