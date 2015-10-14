@@ -10,6 +10,10 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertTrue($add);
 
+        $add = $cap->add('spacetrip','https://comodojo.org/fakespacetrip.html',0.2);
+
+        $this->assertFalse($add);
+
         $get = $cap->get();
 
         $this->assertInternalType('array', $get);
@@ -21,6 +25,10 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
         $delete = $cap->delete('spacetrip');
 
         $this->assertTrue($delete);
+
+        $delete = $cap->delete('fakespacetrip');
+
+        $this->assertFalse($delete);
 
         $nullget = $cap->get();
 
@@ -84,6 +92,10 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertTrue($add);
 
+        $add = $met->add($two);
+
+        $this->assertFalse($add);
+
         $get = $met->get('test.one');
 
         $this->assertInstanceOf('\Comodojo\RpcServer\RpcMethod', $get);
@@ -101,6 +113,10 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
         $delete = $met->delete('test.one');
 
         $this->assertTrue($delete);
+
+        $delete = $met->delete('test.bla');
+
+        $this->assertFalse($delete);
 
         $get = $met->get();
 

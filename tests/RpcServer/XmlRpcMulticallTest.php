@@ -74,11 +74,33 @@ class XmlRpcMulticallTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(-32601, $decoded[1]['faultCode']);
 
-        $this->assertEquals('Method not found', $decoded[1]['faultString']);        
+        $this->assertEquals('Method not found', $decoded[1]['faultString']);
 
         $this->assertEquals(8, $decoded[2]);
 
         $this->assertEquals(42, $decoded[3]);
+
+    }
+
+    public function testRecursiveMulticall() {
+
+        $data = array(
+            array('test.sum', array(2,2)),
+            array('system.multicall', array())
+        );
+
+        $request = $this->encodeRequest($data);
+
+        $result = $this->server->setPayload($request)->serve();
+
+        $decoded = $this->decodeResponse($result);
+
+        $this->assertCount(2, $decoded);
+
+        $this->assertEquals(-31001, $decoded[1]['faultCode']);
+
+        $this->assertEquals('Recursive system.multicall forbidden', $decoded[1]['faultString']);        
+
 
     }
 

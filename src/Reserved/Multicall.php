@@ -58,13 +58,17 @@ class Multicall {
 
         if ( !isset($request[0]) || !isset($request[1]) ) {
 
-            throw new RpcException($parameters_object->errors()->get(-32600), -32600);
+            //throw new RpcException($parameters_object->errors()->get(-32600), -32600);
+
+            return self::packError(-32600, $parameters_object->errors()->get(-32600));
 
         }
 
         if ( $request[0] == 'system.multicall' ) {
 
-            throw new RpcException($parameters_object->errors()->get(-31001), -31001);
+            //throw new RpcException($parameters_object->errors()->get(-31001), -31001);
+
+            return self::packError(-31001, $parameters_object->errors()->get(-31001));
 
         }
 

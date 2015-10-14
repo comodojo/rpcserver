@@ -131,6 +131,11 @@ use \Exception;
         
     }
     
+    /**
+     * Set request payload, raw format
+     *
+     * @return \Comodojo\RpcServer\RpcServer
+     */
     final public function setPayload($payload) {
         
         $this->payload = $payload;
@@ -139,6 +144,11 @@ use \Exception;
         
     }
     
+    /**
+     * Get request payload
+     *
+     * @return string
+     */
     final public function getPayload() {
         
         return $this->payload;
@@ -184,23 +194,44 @@ use \Exception;
         
     }
     
+    /**
+     * Get the capabilities manager
+     *
+     * @return \Comodojo\RpcServer\Component\Capabilities
+     */
     public function capabilities() {
 
         return $this->capabilities;
 
     }
     
+    /**
+     * Get the methods manager
+     *
+     * @return \Comodojo\RpcServer\Component\Methods
+     */
     public function methods() {
 
         return $this->methods;
 
     }
     
+    /**
+     * Get the errors manager
+     *
+     * @return \Comodojo\RpcServer\Component\Errors
+     */
     public function errors() {
 
         return $this->errors;
     }
     
+    /**
+     * Serve request
+     *
+     * @return string
+     * @throws Exception
+     */
     public function serve() {
         
         $response = null;
