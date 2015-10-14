@@ -71,4 +71,16 @@ class JsonRpcCommonTest extends CommonCases {
 
     }
 
+    public function testMulticallForbidden() {
+
+        $request = $this->encodeRequest('system.multicall', array(array('test'=>'test')));
+
+        $result = $this->server->setPayload($request)->serve();
+
+        $decoded = json_decode($result);
+
+        $this->assertEquals(-31000, $decoded->error->code);
+
+    }
+
 }

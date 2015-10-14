@@ -234,8 +234,6 @@ use \Exception;
      */
     public function serve() {
         
-        $response = null;
-        
         $parameters_object = new Parameters($this->capabilities, $this->methods, $this->errors, $this->protocol);
         
         try {
@@ -344,7 +342,7 @@ use \Exception;
 
             if ( strtolower($this->encoding) != 'utf-8' && !is_null($response) ) {
 
-                array_walk( $response, function (&$entry) {
+                array_walk( $response, function (&$entry) use ($payload) {
                     
                     $entry = mb_convert_encoding($payload, strtoupper($this->encoding), "UTF-8");
 

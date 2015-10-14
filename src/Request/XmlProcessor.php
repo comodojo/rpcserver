@@ -26,8 +26,6 @@ class XmlProcessor {
 
     private $method;
     
-    private $payload;
-    
     private $parameters;
     
     private $registered_method;

@@ -2,6 +2,7 @@
 
 use \Comodojo\RpcServer\Request\Parameters;
 use \Comodojo\Exception\RpcException;
+use \Exception;
 
 /** 
  * tbw
@@ -28,8 +29,6 @@ class JsonProcessor {
     private $requests = array();
     
     private $results = array();
-
-    private $selected_signature = null;
 
     private $is_batch_request = false;
     
@@ -303,7 +302,7 @@ class JsonProcessor {
 
         if ( is_object($provided) ) {
 
-            foreach ($provided as $parameter->$value) {
+            foreach ($provided as $parameter=>$value) {
             
                 if ( !isset($requested[$parameter]) ) return false;
 

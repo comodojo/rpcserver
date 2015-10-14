@@ -4,6 +4,7 @@ use \Comodojo\RpcServer\RpcServer;
 use \Comodojo\RpcServer\Request\Parameters;
 use \Comodojo\RpcServer\Request\XmlProcessor;
 use \Comodojo\Exception\RpcException;
+use \Exception;
 
 /** 
  * tbw
@@ -29,7 +30,7 @@ class Multicall {
         
         if ( $params->protocol() !=  RpcServer::XMLRPC ) {
 
-            throw new RpcException($this->errors()->get(-31000), -31000);
+            throw new RpcException($params->errors()->get(-31000), -31000);
 
         }
 

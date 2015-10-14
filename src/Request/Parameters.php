@@ -26,11 +26,11 @@ class Parameters {
 
     private $parameters = array();
     
-    private $capabilities = array();
+    private $capabilities = null;
     
-    private $methods = array();
+    private $methods = null;
     
-    private $errors = array();
+    private $errors = null;
 
     private $protocol = null;
     
