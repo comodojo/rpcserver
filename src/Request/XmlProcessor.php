@@ -138,11 +138,11 @@ class XmlProcessor {
 
         $provided_parameters_count = count($provided_parameters);
 
-        foreach ($signatures as $num=>$signature) {
+        foreach ( $signatures as $num=>$signature ) {
             
             $requested_parameters = array_values($signature["PARAMETERS"]);
 
-            $requested_parameters_count = count( $requested_parameters );
+            $requested_parameters_count = count($requested_parameters);
 
             if ( $provided_parameters_count == $requested_parameters_count ) return $num;
 
@@ -160,7 +160,7 @@ class XmlProcessor {
 
         $requested_parameters_keys = array_keys($requested_parameters);
 
-        foreach( $provided as $index => $parameter ) {
+        foreach ( $provided as $index => $parameter ) {
             
             $parameters[$requested_parameters_keys[$index]] = $parameter;
             
@@ -172,7 +172,7 @@ class XmlProcessor {
     
     private static function preprocessRequest($payload) {
 
-        return ( is_array($payload[0]) ) ? array('system.multicall', array($payload)) : array($payload[0], $payload[1]);
+        return (is_array($payload[0])) ? array('system.multicall', array($payload)) : array($payload[0], $payload[1]);
         
     }
     

@@ -123,7 +123,7 @@ class JsonProcessor {
 
             $is_batch = true;
             
-            foreach($payload as $request) $requests[] = self::preprocessJsonRequest($request);
+            foreach ( $payload as $request ) $requests[] = self::preprocessJsonRequest($request);
             
         } else {
             
@@ -264,7 +264,7 @@ class JsonProcessor {
         
         $requested_parameters_keys = array_keys($requested_parameters);
 
-        foreach( $provided as $index => $parameter ) {
+        foreach ( $provided as $index => $parameter ) {
             
             $parameters[$requested_parameters_keys[$index]] = $parameter;
             
@@ -288,7 +288,7 @@ class JsonProcessor {
 
         $signatures = $registered_method->getSignatures(false);
 
-        foreach ($signatures as $num => $signature) {
+        foreach ( $signatures as $num => $signature ) {
             
             if ( self::checkSignatureMatch($parameters, $signature["PARAMETERS"]) === true ) return $num;
 
@@ -302,7 +302,7 @@ class JsonProcessor {
 
         if ( is_object($provided) ) {
 
-            foreach ($provided as $parameter=>$value) {
+            foreach ( $provided as $parameter=>$value ) {
             
                 if ( !isset($requested[$parameter]) ) return false;
 
@@ -310,9 +310,9 @@ class JsonProcessor {
 
         } else {
 
-            $provided_parameters_count = count( $provided );
+            $provided_parameters_count = count($provided);
 
-            $requested_parameters_count = count( $requested );
+            $requested_parameters_count = count($requested);
 
             if ( $provided_parameters_count != $requested_parameters_count ) return false;
 

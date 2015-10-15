@@ -69,7 +69,7 @@ class RpcServer {
     
     private $protocol = null;
     
-    private $supported_protocols = array('xml','json');
+    private $supported_protocols = array('xml', 'json');
     
     /**
      * Class constructor
@@ -174,7 +174,7 @@ class RpcServer {
      *
      * @param   string  $key Encryption key
      *
-     * @return  \Comodojo\RpcClient\RpcServer
+     * @return  RpcServer
      * 
      * @throws \Exception
      */
@@ -266,7 +266,7 @@ class RpcServer {
         
         if ( empty($payload) || !is_string($payload) ) throw new RpcException("Invalid Request", -32600);
         
-        if ( substr($payload,0,27) == 'comodojo_encrypted_request-' ) {
+        if ( substr($payload, 0, 27) == 'comodojo_encrypted_request-' ) {
             
             if ( empty($this->encrypt) ) throw new RpcException("Transport error", -32300);
             
@@ -290,7 +290,7 @@ class RpcServer {
 
                 $decoded = $decoder->decodeCall($payload);
                 
-            } catch ( XmlrpcException $xe ) {
+            } catch (XmlrpcException $xe) {
                 
                 throw new RpcException("Parse error", -32700);
                 
@@ -318,6 +318,9 @@ class RpcServer {
         
     }
     
+    /**
+     * @param boolean $error
+     */
     private function can($response, $error) {
         
         $encoded = null;
@@ -332,7 +335,7 @@ class RpcServer {
 
                 $encoded = $error ? $encoder->encodeError($response->getCode(), $response->getMessage()) : $encoder->encodeResponse($response);
                 
-            } catch ( XmlrpcException $xe ) {
+            } catch (XmlrpcException $xe) {
                 
                 $encoded = $encoder->encodeError(-32500, "Application error");
 
@@ -342,7 +345,7 @@ class RpcServer {
 
             if ( strtolower($this->encoding) != 'utf-8' && !is_null($response) ) {
 
-                array_walk( $response, function (&$entry) use ($payload) {
+                array_walk($response, function(&$entry) use ($payload) {
                     
                     $entry = mb_convert_encoding($payload, strtoupper($this->encoding), "UTF-8");
 
@@ -370,6 +373,9 @@ class RpcServer {
         
     }
     
+    /**
+     * @param Methods $methods
+     */
     private static function setIntrospectionMethods($methods) {
         
         $get_capabilities = RpcMethod::create("system.getCapabilities", "\Comodojo\RpcServer\Reserved\GetCapabilities", "execute")
@@ -387,7 +393,7 @@ class RpcServer {
         $method_help = RpcMethod::create("system.methodHelp", "\Comodojo\RpcServer\Introspection\MethodHelp", "execute")
             ->setDescription("Returns help text if defined for the method passed, otherwise returns an empty string")
             ->setReturnType('string')
-            ->addParameter('string','method');
+            ->addParameter('string', 'method');
             
         $methods->add($method_help);
         
@@ -395,19 +401,22 @@ class RpcServer {
             ->setDescription("Returns an array of known signatures (an array of arrays) for the method name passed. 
         If no signatures are known, returns a none-array (test for type != array to detect missing signature)")
             ->setReturnType('array')
-            ->addParameter('string','method');
+            ->addParameter('string', 'method');
         
         $methods->add($method_signature);
             
         $multicall = RpcMethod::create("system.multicall", "\Comodojo\RpcServer\Reserved\Multicall", "execute")
             ->setDescription("Boxcar multiple RPC calls in one request. See http://www.xmlrpc.com/discuss/msgReader\$1208 for details")
             ->setReturnType('array')
-            ->addParameter('array','requests');
+            ->addParameter('array', 'requests');
             
         $methods->add($multicall);
     
     }
     
+    /**
+     * @param Capabilities $capabilities
+     */
     private static function setCapabilities($capabilities) {
     
         $capabilities->add('xmlrpc', 'http://www.xmlrpc.com/spec', 1);
