@@ -32,7 +32,7 @@ use \Exception;
  * THE SOFTWARE.
  */
  
- class RpcServer {
+class RpcServer {
 
     const XMLRPC = 'xml';
     
