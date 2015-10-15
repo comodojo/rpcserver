@@ -122,9 +122,9 @@ class RpcMethod {
 
             $signatures = array();
 
-            foreach ($this->signatures as $signature) {
+            foreach ( $this->signatures as $signature ) {
                 
-                $signatures[] = array_merge(array($signature["RETURNTYPE"]),array_values($signature["PARAMETERS"]));
+                $signatures[] = array_merge(array($signature["RETURNTYPE"]), array_values($signature["PARAMETERS"]));
 
             }
 
@@ -142,7 +142,7 @@ class RpcMethod {
 
         if ( $compact ) {
 
-            return array_merge(array($this->signatures[$this->current_signature]["RETURNTYPE"]),array_values($this->signatures[$this->current_signature]["PARAMETERS"]));
+            return array_merge(array($this->signatures[$this->current_signature]["RETURNTYPE"]), array_values($this->signatures[$this->current_signature]["PARAMETERS"]));
 
         } else {
 

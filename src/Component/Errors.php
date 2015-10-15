@@ -73,7 +73,7 @@ class Errors {
         
         if ( array_key_exists($code, $this->rpc_errors) ) return $this->rpc_errors[$code];
         
-        else if ( $code >= -32099 &&  $code <= -32000 ) return 'Server Error';
+        else if ( $code >= -32099 && $code <= -32000 ) return 'Server Error';
         
         else return 'Unknown Error';
         

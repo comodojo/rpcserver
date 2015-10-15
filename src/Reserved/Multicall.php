@@ -28,7 +28,7 @@ class Multicall {
 
     final public static function execute($params) {
         
-        if ( $params->protocol() !=  RpcServer::XMLRPC ) {
+        if ( $params->protocol() != RpcServer::XMLRPC ) {
 
             throw new RpcException($params->errors()->get(-31000), -31000);
 
@@ -38,7 +38,7 @@ class Multicall {
 
         $results = array();
 
-        foreach ($boxcarred_requests as $position => $request) {
+        foreach ( $boxcarred_requests as $position => $request ) {
 
             $new_parameters = new Parameters(
                 $params->capabilities(),
