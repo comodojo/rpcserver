@@ -3,7 +3,6 @@
 use \Comodojo\Xmlrpc\XmlrpcEncoder;
 use \Comodojo\Xmlrpc\XmlrpcDecoder;
 use \Comodojo\RpcServer\RpcServer;
-use \phpseclib\Crypt\AES;
 
 class XmlRpcEncryptedTransportTest extends \PHPUnit_Framework_TestCase {
 
@@ -15,7 +14,7 @@ class XmlRpcEncryptedTransportTest extends \PHPUnit_Framework_TestCase {
 
         $data = $encoder->encodeCall($method, $parameters);
 
-        $aes = new AES();
+        $aes = new Crypt_AES();
 
         $aes->setKey($this->key);
 
@@ -25,7 +24,7 @@ class XmlRpcEncryptedTransportTest extends \PHPUnit_Framework_TestCase {
 
     protected function decodeResponse($received) {
 
-        $aes = new AES();
+        $aes = new Crypt_AES();
 
         $aes->setKey($this->key);
 

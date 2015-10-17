@@ -8,7 +8,7 @@ use \Comodojo\RpcServer\Request\XmlProcessor;
 use \Comodojo\RpcServer\Request\JsonProcessor;
 use \Comodojo\Xmlrpc\XmlrpcEncoder;
 use \Comodojo\Xmlrpc\XmlrpcDecoder;
-use \phpseclib\Crypt\AES;
+use \Crypt_AES;
 use \Comodojo\Exception\RpcException;
 use \Comodojo\Exception\XmlrpcException;
 use \Exception;
@@ -272,7 +272,7 @@ class RpcServer {
             
             $this->request_is_encrypted = true;
             
-            $aes = new AES();
+            $aes = new Crypt_AES();
             
             $aes->setKey($this->encrypt);
             
@@ -361,7 +361,7 @@ class RpcServer {
         
         if ( $this->request_is_encrypted /* && !empty($encoded) */ ) {
             
-            $aes = new AES();
+            $aes = new Crypt_AES();
             
             $aes->setKey($this->encrypt);
             
