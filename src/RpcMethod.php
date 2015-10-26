@@ -23,18 +23,22 @@ use \Exception;
 class RpcMethod {
     
     public static $rpcvalues = array(
-        "i4",
-        "int",
-        "double",
-        "boolean",
-        "base64",
-        "dateTime.iso8601",
-        "string",
-        "array",
-        "struct",
-        "nil",
-        "ex:nil",
-        "undefined"
+        "i4" => "int",
+        "int" => "int",
+        "double" => "double",
+        "float" => "double",
+        "boolean" => "boolean",
+        "bool" => "boolean",
+        "base64" => "base64",
+        "dateTime.iso8601" => "dateTime.iso8601",
+        "datetime" => "dateTime.iso8601",
+        "string" => "string",
+        "array" => "array",
+        "struct" => "struct",
+        "nil" => "null",
+        "ex:nil" => "null",
+        "null" => "null",
+        "undefined" => "undefined"
     );
     
     private $name = null;
@@ -184,7 +188,7 @@ class RpcMethod {
         
         if ( !in_array($type, self::$rpcvalues) ) throw new Exception("RPC method exception: invalid return type");
         
-        $this->signatures[$this->current_signature]["RETURNTYPE"] = $type;
+        $this->signatures[$this->current_signature]["RETURNTYPE"] = self::$rpcvalues[$type];
 
         return $this;
         
@@ -202,7 +206,7 @@ class RpcMethod {
         
         if ( empty($name) ) throw new Exception("RPC method exception: invalid parameter name");
         
-        $this->signatures[$this->current_signature]["PARAMETERS"][$name] = $type;
+        $this->signatures[$this->current_signature]["PARAMETERS"][$name] = self::$rpcvalues[$type];
 
         return $this;
         
