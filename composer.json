@@ -29,7 +29,8 @@
         "php": ">=5.3.0",
         "comodojo/xmlrpc": "^1.1",
         "comodojo/exceptions": "@stable",
-        "phpseclib/phpseclib": "0.3.*"
+        "phpseclib/phpseclib": "0.3.*",
+        "psr/log": "~1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.0",

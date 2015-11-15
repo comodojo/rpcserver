@@ -1,7 +1,7 @@
 <?php namespace Comodojo\RpcServer\Component;
 
 /** 
- * tbw
+ * RPC rpc_methods manager
  * 
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -20,19 +20,53 @@
  
 class Methods {
 
-    private $methods = array();
+    /**
+     * Array of methods
+     *
+     * @var array
+     */
+    private $rpc_methods = array();
+
+    /**
+     * Current logger
+     *
+     * @var \Psr\Log\LoggerInterface
+     */
+    private $logger = null;
+
+    /**
+     * Class constructor
+     *
+     * @param \Psr\Log\LoggerInterface $logger
+     */
+    public function __construct(\Psr\Log\LoggerInterface $logger) {
+
+        $this->logger = $logger;
+
+    }
     
+    /**
+     * Add an RPC method
+     *
+     * @param \Comodojo\RpcServer\RpcMethod $method
+     *
+     * @return bool
+     */
     final public function add(\Comodojo\RpcServer\RpcMethod $method) {
         
         $name = $method->getName();
 
-        if ( array_key_exists($name, $this->methods) ) {
+        if ( array_key_exists($name, $this->rpc_methods) ) {
+
+            $this->logger->warning("Cannot add method ".$name.": duplicate entry");
             
             return false;
             
         } else {
             
-            $this->methods[$name] = $method;
+            $this->rpc_methods[$name] = $method;
+
+            $this->logger->info("Added method ".$name);
             
             return true;
             
@@ -40,15 +74,26 @@ class Methods {
         
     }
     
+    /**
+     * Delete a method
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
     final public function delete($name) {
         
-        if ( array_key_exists($name, $this->methods) ) {
+        if ( array_key_exists($name, $this->rpc_methods) ) {
             
-            unset($this->methods[$name]);
+            unset($this->rpc_methods[$name]);
+
+            $this->logger->info("Deleted method ".$name);
             
             return true;
             
         } else {
+            
+            $this->logger->warning("Cannot delete method ".$name.": entry not found");
             
             return false;
             
@@ -56,15 +101,22 @@ class Methods {
         
     }
     
+    /**
+     * Get registered method(s)
+     *
+     * @param string $method
+     *
+     * @return array|\Comodojo\RpcServer\RpcMethod|null
+     */
     final public function get($method = null) {
         
         if ( empty($method) ) {
             
-            $return = $this->methods;
+            $return = $this->rpc_methods;
             
-        } else if ( array_key_exists($method, $this->methods) ) {
+        } else if ( array_key_exists($method, $this->rpc_methods) ) {
             
-            $return = $this->methods[$method];
+            $return = $this->rpc_methods[$method];
         
         } else {
             

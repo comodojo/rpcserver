@@ -44,6 +44,7 @@ class Multicall {
                 $params->capabilities(),
                 $params->methods(),
                 $params->errors(),
+                $params->logger(),
                 $params->protocol()
             );
 
@@ -77,7 +78,7 @@ class Multicall {
 
         try {
             
-            $result = XmlProcessor::process($payload, $parameters_object);
+            $result = XmlProcessor::process($payload, $parameters_object, $parameters_object->logger());
 
         } catch (RpcException $re) {
             

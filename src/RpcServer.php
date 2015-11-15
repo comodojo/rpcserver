@@ -6,6 +6,7 @@ use \Comodojo\RpcServer\Component\Errors;
 use \Comodojo\RpcServer\Request\Parameters;
 use \Comodojo\RpcServer\Request\XmlProcessor;
 use \Comodojo\RpcServer\Request\JsonProcessor;
+use \Comodojo\RpcServer\Util\NullLogger;
 use \Comodojo\Xmlrpc\XmlrpcEncoder;
 use \Comodojo\Xmlrpc\XmlrpcDecoder;
 use \Crypt_AES;
@@ -34,8 +35,18 @@ use \Exception;
  
 class RpcServer {
 
+    /**
+     * Capabilities collector
+     *
+     * @const string
+     */
     const XMLRPC = 'xml';
     
+    /**
+     * Capabilities collector
+     *
+     * @const string
+     */
     const JSONRPC = 'json';
 
     /**
@@ -59,17 +70,54 @@ class RpcServer {
      */
     private $errors = null;
     
+    /**
+     * The request payload, better the RAW export of 'php://input'
+     *
+     * @var string
+     */
     private $payload = null;
     
+    /**
+     * Encryption key, in case of encrypted transport
+     *
+     * @var string
+     */
     private $encrypt = null;
     
+    /**
+     * Current encoding
+     *
+     * @var string
+     */
     private $encoding = 'utf-8';
     
-    private $request_is_encrypted = false;
-    
+    /**
+     * Current protocol
+     *
+     * @var string
+     */
     private $protocol = null;
     
+    /**
+     * Supported RPC protocols
+     *
+     * @var array
+     */
     private $supported_protocols = array('xml', 'json');
+
+    /**
+     * Internal marker (encryption)
+     *
+     * @var bool
+     */
+    private $request_is_encrypted = false;
+
+    /**
+     * Current logger
+     *
+     * @var \Psr\Log\LoggerInterface
+     */
+    private $logger = null;
     
     /**
      * Class constructor
@@ -78,11 +126,31 @@ class RpcServer {
      *
      * @throws \Exception
      */
-    public function __construct($protocol) {
+    public function __construct($protocol, \Psr\Log\LoggerInterface $logger = null) {
         
+        $this->logger = is_null($logger) ? new NullLogger() : $logger;
+
         try {
             
+            // setup protocol
+
             $this->setProtocol($protocol);
+
+            // init components
+
+            $this->capabilities = new Capabilities($this->logger);
+        
+            $this->methods = new Methods($this->logger);
+            
+            $this->errors = new Errors($this->logger);
+
+            // populate components
+
+            self::setIntrospectionMethods($this->methods);
+            
+            self::setCapabilities($this->capabilities);
+
+            self::setErrors($this->errors);
             
         } catch (Exception $e) {
             
@@ -90,15 +158,7 @@ class RpcServer {
             
         }
         
-        $this->capabilities = new Capabilities();
-        
-        $this->methods = new Methods();
-        
-        $this->errors = new Errors();
-        
-        self::setIntrospectionMethods($this->methods);
-        
-        self::setCapabilities($this->capabilities);
+        $this->logger->notice("RpcServer init complete, protocol ".$protocol);
         
     }
     
@@ -225,6 +285,17 @@ class RpcServer {
 
         return $this->errors;
     }
+
+    /**
+     * Retrieve the logger instance
+     *
+     * @return \Monolog\Logger|null
+     */
+    public function logger() {
+
+        return $this->logger;
+
+    }
     
     /**
      * Serve request
@@ -233,16 +304,22 @@ class RpcServer {
      * @throws Exception
      */
     public function serve() {
+
+        $this->logger->notice("Start serving request");
         
-        $parameters_object = new Parameters($this->capabilities, $this->methods, $this->errors, $this->protocol);
+        $parameters_object = new Parameters($this->capabilities, $this->methods, $this->errors, $this->logger, $this->protocol);
         
         try {
+
+            $this->logger->debug("Received payload: ".$this->payload);
             
             $payload = $this->uncan($this->payload);
 
-            if ( $this->protocol == self::XMLRPC ) $result = XmlProcessor::process($payload, $parameters_object);
+            $this->logger->debug("Decoded payload", (array)$payload);
+
+            if ( $this->protocol == self::XMLRPC ) $result = XmlProcessor::process($payload, $parameters_object, $this->logger);
             
-            else if ( $this->protocol == self::JSONRPC ) $result = JsonProcessor::process($payload, $parameters_object);
+            else if ( $this->protocol == self::JSONRPC ) $result = JsonProcessor::process($payload, $parameters_object, $this->logger);
             
             else throw new Exception('Invalid or unsupported RPC protocol');
             
@@ -418,19 +495,48 @@ class RpcServer {
      * @param Capabilities $capabilities
      */
     private static function setCapabilities($capabilities) {
+
+        $supported_capabilities = array(
+            'xmlrpc' => array('http://www.xmlrpc.com/spec', 1),
+            'system.multicall' => array('http://www.xmlrpc.com/discuss/msgReader$1208', 1),
+            'introspection' => array('http://phpxmlrpc.sourceforge.net/doc-2/ch10.html', 2),
+            'nil' => array('http://www.ontosys.com/xml-rpc/extensions.php', 1),
+            'faults_interop' => array('http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php', 20010516),
+            'json-rpc' => array('http://www.jsonrpc.org/specification', 2)
+        );
     
-        $capabilities->add('xmlrpc', 'http://www.xmlrpc.com/spec', 1);
-        
-        $capabilities->add('system.multicall', 'http://www.xmlrpc.com/discuss/msgReader$1208', 1);
-        
-        $capabilities->add('introspection', 'http://phpxmlrpc.sourceforge.net/doc-2/ch10.html', 2);
-        
-        $capabilities->add('nil', 'http://www.ontosys.com/xml-rpc/extensions.php', 1);
-        
-        $capabilities->add('faults_interop', 'http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php', 20010516);
-        
-        $capabilities->add('json-rpc', 'http://www.jsonrpc.org/specification', 2);
+        foreach ($supported_capabilities as $capability => $values) {
+            
+            $capabilities->add($capability, $values[0], $values[1]);
+
+        }
     
+    }
+
+    private static function setErrors($errors) {
+
+        $std_rpc_errors = array(
+            -32700 => "Parse error",
+            -32701 => "Parse error - Unsupported encoding",
+            -32702 => "Parse error - Invalid character for encoding",
+            -32600 => "Invalid Request",
+            -32601 => "Method not found",
+            -32602 => "Invalid params",
+            -32603 => "Internal error",
+            -32500 => "Application error",
+            -32400 => "System error",
+            -32300 => "Transport error",
+            // Predefined Comodojo Errors
+            -31000 => "Multicall is available only in XMLRPC",
+            -31001 => "Recursive system.multicall forbidden"
+        );
+
+        foreach ($std_rpc_errors as $code => $message) {
+            
+            $errors->add($code, $message);
+
+        }
+        
     }
     
  }

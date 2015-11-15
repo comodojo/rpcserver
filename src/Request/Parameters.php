@@ -3,6 +3,7 @@
 use \Comodojo\RpcServer\Component\Capabilities;
 use \Comodojo\RpcServer\Component\Methods;
 use \Comodojo\RpcServer\Component\Errors;
+use \Psr\Log\LoggerInterface;
 
 /** 
  * tbw
@@ -33,14 +34,18 @@ class Parameters {
     private $errors = null;
 
     private $protocol = null;
+
+    private $logger = null;
     
-    public function __construct(Capabilities $capabilities, Methods $methods, Errors $errors, $protocol) {
+    public function __construct(Capabilities $capabilities, Methods $methods, Errors $errors, LoggerInterface $logger, $protocol) {
         
         $this->capabilities = $capabilities;
         
         $this->methods = $methods;
         
         $this->errors = $errors;
+
+        $this->logger = $logger;
 
         $this->protocol = $protocol;
         
@@ -75,6 +80,12 @@ class Parameters {
     final public function protocol() {
 
         return $this->protocol;
+
+    }
+
+    final public function logger() {
+
+        return $this->logger;
 
     }
     

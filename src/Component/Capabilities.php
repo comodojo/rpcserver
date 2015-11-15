@@ -1,7 +1,7 @@
 <?php namespace Comodojo\RpcServer\Component;
 
 /** 
- * tbw
+ * RPC capabilities manager
  * 
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -20,20 +20,56 @@
  
 class Capabilities {
 
+    /**
+     * Array of capabilities
+     *
+     * @var array
+     */
     private $rpc_capabilities = array();
+
+    /**
+     * Current logger
+     *
+     * @var \Psr\Log\LoggerInterface
+     */
+    private $logger = null;
+
+    /**
+     * Class constructor
+     *
+     * @param \Psr\Log\LoggerInterface $logger
+     */
+    public function __construct(\Psr\Log\LoggerInterface $logger) {
+
+        $this->logger = $logger;
+
+    }
     
+    /**
+     * Add a capability
+     *
+     * @param string $capability
+     * @param string $specUrl
+     * @param string $specVersion
+     *
+     * @return bool
+     */
     final public function add($capability, $specUrl, $specVersion) {
         
         if ( array_key_exists($capability, $this->rpc_capabilities) ) {
             
+            $this->logger->warning("Cannot add capability ".$capability.": duplicate entry");
+
             return false;
             
         } else {
-            
+
             $this->rpc_capabilities[$capability] = array(
                 'specUrl' => $specUrl,
                 'specVersion' => $specVersion
             );
+
+            $this->logger->info("Added capability ".$capability);
             
             return true;
             
@@ -41,25 +77,47 @@ class Capabilities {
         
     }
     
+    /**
+     * Delete a capability
+     *
+     * @param string $capability
+     *
+     * @return bool
+     */
     final public function delete($capability) {
         
         if ( array_key_exists($capability, $this->rpc_capabilities) ) {
             
             unset($this->rpc_capabilities[$capability]);
+
+            $this->logger->info("Deleted capability ".$capability);
             
             return true;
             
         } else {
             
+            $this->logger->warning("Cannot delete capability ".$capability.": entry not found");
+
             return false;
             
         }
         
     }
     
-    final public function get() {
+    /**
+     * Get registered capability (capabilities)
+     *
+     * @param string $capability
+     *
+     * @return array|null
+     */
+    final public function get($capability = null) {
+
+        if ( is_null($capability) ) return $this->rpc_capabilities;
+
+        else if ( array_key_exists($capability, $this->rpc_capabilities) ) return $this->rpc_capabilities[$capability];
         
-        return $this->rpc_capabilities;
+        else return null;
         
     }
     

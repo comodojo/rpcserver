@@ -4,7 +4,9 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
     public function testCapabilities() {
 
-        $cap = new \Comodojo\RpcServer\Component\Capabilities();
+        $logger = new \Comodojo\RpcServer\Util\NullLogger();
+
+        $cap = new \Comodojo\RpcServer\Component\Capabilities($logger);
 
         $add = $cap->add('spacetrip','https://comodojo.org/spacetrip.html',0.1);
 
@@ -21,6 +23,14 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
         $this->assertCount(1, $get);
 
         $this->assertInternalType('array', $get['spacetrip']);
+
+        $get = $cap->get("spacetrip");
+
+        $this->assertInternalType('array', $get);
+
+        $this->assertEquals('https://comodojo.org/spacetrip.html', $get['specUrl']);
+
+        $this->assertEquals(0.1, $get['specVersion']);
 
         $delete = $cap->delete('spacetrip');
 
@@ -40,7 +50,9 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
     public function testErrors() {
 
-        $err = new \Comodojo\RpcServer\Component\Errors();
+        $logger = new \Comodojo\RpcServer\Util\NullLogger();
+
+        $err = new \Comodojo\RpcServer\Component\Errors($logger);
 
         $add = $err->add(-90000,'Test Error');
 
@@ -60,7 +72,7 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
         $get = $err->get(-32601);
 
-        $this->assertEquals('Method not found', $get);
+        $this->assertEquals('Unknown Error', $get);
 
         $get = $err->get(-30000);
 
@@ -70,11 +82,17 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertTrue($delete);
 
+        $getall = $err->get();
+
+        $this->assertInternalType('array', $getall);
+
     }
 
     public function testMethods() {
 
-        $met = new \Comodojo\RpcServer\Component\Methods();
+        $logger = new \Comodojo\RpcServer\Util\NullLogger();
+
+        $met = new \Comodojo\RpcServer\Component\Methods($logger);
 
         $one = \Comodojo\RpcServer\RpcMethod::create("test.one", function($params) { return $params->get(); })
             ->setDescription("Test Method One")

@@ -31,14 +31,25 @@ class XmlProcessor {
     private $registered_method;
 
     private $selected_signature = null;
+
+    private $logger = null;
     
-    public function __construct($payload, Parameters $parameters) {
+    public function __construct($payload, Parameters $parameters, \Psr\Log\LoggerInterface $logger) {
         
+        $this->logger = $logger;
+
+        $this->logger->notice("Starting XML processor");
+
         try {
         
             $this->parameters = $parameters;
         
             list($this->method, $request_parameters) = self::preprocessRequest($payload);
+
+            $this->logger->debug("Current request", array(
+                'METHOD' => $this->method,
+                'PARAMS' => $request_parameters
+            ));
 
             $this->registered_method = $this->checkRequestSustainability();
             
@@ -49,10 +60,14 @@ class XmlProcessor {
             $this->parameters->setParameters($parameters);
         
         } catch (RpcException $re) {
+
+            $this->logger->warning($re->getMessage());
             
             throw $re;
             
         } catch (Exception $e) {
+
+            $this->logger->error($e->getMessage());
             
             throw $e;
             
@@ -70,6 +85,11 @@ class XmlProcessor {
 
             function($severity, $message, $file, $line) {
 
+                $this->logger->error($message, array(
+                    "FILE" => $file,
+                    "LINE" => $line
+                ));
+
                 throw new RpcException('Internal error', -32603);
 
             }
@@ -78,7 +98,7 @@ class XmlProcessor {
 
         try {
         
-            $return = empty($method) ? call_user_func($callback, $this->parameters) : call_user_func(Array($callback, $method), $this->parameters);
+            $return = empty($method) ? call_user_func($callback, $this->parameters) : call_user_func(array($callback, $method), $this->parameters);
 
         } catch (RpcException $re) {
 
@@ -90,6 +110,11 @@ class XmlProcessor {
 
             restore_error_handler();
 
+            $this->logger->error($e->getMessage(), array(
+                "FILE" => $e->getFile(),
+                "LINE" => $e->getLine()
+            ));
+
             throw new RpcException('Internal error', -32603);
             
         }
@@ -100,11 +125,11 @@ class XmlProcessor {
         
     }
     
-    public static function process($payload, Parameters $parameters) {
+    public static function process($payload, Parameters $parameters, \Psr\Log\LoggerInterface $logger) {
     
         try {
             
-            $processor = new self($payload, $parameters);
+            $processor = new self($payload, $parameters, $logger);
             
             $return = $processor->run();
             

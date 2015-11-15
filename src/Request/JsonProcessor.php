@@ -31,8 +31,14 @@ class JsonProcessor {
     private $results = array();
 
     private $is_batch_request = false;
+
+    private $logger = null;
     
-    public function __construct($payload, Parameters $parameters) {
+    public function __construct($payload, Parameters $parameters, \Psr\Log\LoggerInterface $logger) {
+
+        $this->logger = $logger;
+
+        $this->logger->notice("Starting JSON processor");
         
         $this->parameters = $parameters;
 
@@ -45,6 +51,8 @@ class JsonProcessor {
         foreach ( $this->requests as $request ) {
             
             if ( isset($request['ERROR_CODE']) && isset($request['ERROR_MESSAGE']) ) {
+
+                $this->logger->warning("Invalid request ".$request['ID']);
                 
                 $result = self::packJsonError($request['ERROR_CODE'], $request['ERROR_MESSAGE'], $request['ID']);
 
@@ -53,6 +61,8 @@ class JsonProcessor {
             } else {
                 
                 try {
+
+                    $this->logger->notice("Serving request ".$request['METHOD']."(".$request['ID'].")");
                 
                     $response = $this->runSingleRequest($request['METHOD'], $request['PARAMETERS']);
                     
@@ -60,9 +70,13 @@ class JsonProcessor {
                     
                 } catch (RpcException $re) {
 
+                    $this->logger->warning("Error handling request ".$request['ID'].": ".$re->getMessage());
+
                     $result = self::packJsonError($re->getCode(), $re->getMessage(), $request['ID']);
                     
                 } catch (Exception $e) {
+
+                    $this->logger->error($e->getMessage());
             
                     throw $e;
             
@@ -91,11 +105,11 @@ class JsonProcessor {
         
     }
     
-    public static function process($payload, Parameters $parameters) {
+    public static function process($payload, Parameters $parameters, \Psr\Log\LoggerInterface $logger) {
     
         try {
             
-            $processor = new JsonProcessor($payload, $parameters);
+            $processor = new JsonProcessor($payload, $parameters, $logger);
             
             $return = $processor->run();
             
@@ -191,6 +205,11 @@ class JsonProcessor {
 
             function($severity, $message, $file, $line) {
 
+                $this->logger->error($message, array(
+                    "FILE" => $file,
+                    "LINE" => $line
+                ));
+
                 throw new RpcException('Internal error', -32603);
 
             }
@@ -210,6 +229,11 @@ class JsonProcessor {
         } catch (Exception $e) {
 
             restore_error_handler();
+
+            $this->logger->error($e->getMessage(), array(
+                "FILE" => $e->getFile(),
+                "LINE" => $e->getLine()
+            ));
 
             throw new RpcException('Internal error', -32603);
             
