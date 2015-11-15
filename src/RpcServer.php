@@ -289,7 +289,7 @@ class RpcServer {
     /**
      * Retrieve the logger instance
      *
-     * @return \Monolog\Logger|null
+     * @return \Psr\Log\LoggerInterface
      */
     public function logger() {
 
@@ -422,9 +422,13 @@ class RpcServer {
 
             if ( strtolower($this->encoding) != 'utf-8' && !is_null($response) ) {
 
-                array_walk($response, function(&$entry) use ($payload) {
+                array_walk_recursive($response, function(&$entry) {
                     
-                    $entry = mb_convert_encoding($payload, strtoupper($this->encoding), "UTF-8");
+                    if ( is_string($entry) ) {
+
+                        $entry = mb_convert_encoding($entry, strtoupper($this->encoding), "UTF-8");
+
+                    }
 
                 });
                 
