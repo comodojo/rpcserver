@@ -1,7 +1,7 @@
 <?php namespace Comodojo\RpcServer\Component;
 
 /** 
- * RPC rpc_methods manager
+ * RPC methods manager
  * 
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>

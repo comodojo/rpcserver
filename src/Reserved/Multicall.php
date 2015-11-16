@@ -7,7 +7,9 @@ use \Comodojo\Exception\RpcException;
 use \Exception;
 
 /** 
- * tbw
+ * The system.multicall method implementation.
+ * 
+ * This method is available ONLY for XMLRPC protocol; json v2 SHOULD use batch requests.
  * 
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -26,6 +28,13 @@ use \Exception;
  
 class Multicall {
 
+    /**
+     * Execute call
+     *
+     * @param \Comodojo\RpcServer\Request\Parameters $params
+     * 
+     * @return array
+     */
     final public static function execute($params) {
         
         if ( $params->protocol() != RpcServer::XMLRPC ) {
@@ -56,6 +65,14 @@ class Multicall {
         
     }
 
+    /**
+     * Perform a single call
+     *
+     * @param array                                  $request
+     * @param \Comodojo\RpcServer\Request\Parameters $params
+     * 
+     * @return mixed
+     */
     private static function singleCall($request, $parameters_object) {
 
         if ( !isset($request[0]) || !isset($request[1]) ) {
@@ -90,6 +107,14 @@ class Multicall {
 
     }
 
+    /**
+     * Pack an XMLRPC error
+     *
+     * @param integer $code
+     * @param srting  $message
+     * 
+     * @return mixed
+     */
     private static function packError($code, $message) {
 
         return array('faultCode' => $code, 'faultString' => $message);

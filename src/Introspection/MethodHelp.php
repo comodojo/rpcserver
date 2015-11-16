@@ -3,7 +3,7 @@
 use \Comodojo\Exception\RpcException;
 
 /** 
- * tbw
+ * The system.methodHelp method implementation
  * 
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -22,6 +22,13 @@ use \Comodojo\Exception\RpcException;
  
 class MethodHelp {
 
+    /**
+     * Execute call
+     *
+     * @param \Comodojo\RpcServer\Request\Parameters $params
+     * 
+     * @return string
+     */
     final public static function execute($params) {
         
         $asked_method = $params->get('method');

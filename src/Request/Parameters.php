@@ -6,7 +6,17 @@ use \Comodojo\RpcServer\Component\Errors;
 use \Psr\Log\LoggerInterface;
 
 /** 
- * tbw
+ * The parameters object
+ * 
+ * It provides to each RPC method a way to access:
+ *  - Provided parameters
+ *  - Supported capabilities
+ *  - Implemented methods
+ *  - Predefined errors
+ *  - Current RPC protocol
+ *  - Current logger
+ * 
+ * The parameter object is the only one parameter passed to a RPC method's implementation
  * 
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -25,18 +35,57 @@ use \Psr\Log\LoggerInterface;
  
 class Parameters {
 
+    /**
+     * Array of provided parameters
+     *
+     * @var array
+     */
     private $parameters = array();
     
+    /**
+     * Supported capabilities
+     *
+     * @var \Comodojo\Component\Capabilities
+     */
     private $capabilities = null;
     
+    /**
+     * Implemented methods
+     *
+     * @var \Comodojo\Component\Methods
+     */
     private $methods = null;
     
+    /**
+     * Predefined errors
+     *
+     * @var \Comodojo\Component\Errors
+     */
     private $errors = null;
 
+    /**
+     * Current RPC protocol (json|rpc)
+     *
+     * @var string
+     */
     private $protocol = null;
 
+    /**
+     * Current logger
+     *
+     * @var \Psr\Log\LoggerInterface
+     */
     private $logger = null;
     
+    /**
+     * Class constructor
+     *
+     * @param \Comodojo\Component\Capabilities  $capabilities
+     * @param \Comodojo\Component\Methods       $methods
+     * @param \Comodojo\Component\Errors        $errors
+     * @param \Psr\Log\LoggerInterface          $logger
+     * @param string                            $protocol
+     */
     public function __construct(Capabilities $capabilities, Methods $methods, Errors $errors, LoggerInterface $logger, $protocol) {
         
         $this->capabilities = $capabilities;
@@ -51,6 +100,13 @@ class Parameters {
         
     }
     
+    /**
+     * Set provided parameters
+     *
+     * @param array $parameters
+     * 
+     * @return Comodojo\RpcServer\Request\Parameters
+     */
     public function setParameters($parameters) {
         
         $this->parameters = $parameters;
@@ -59,36 +115,68 @@ class Parameters {
         
     }
     
+    /**
+     * Get capabilities object
+     *
+     * @return \Comodojo\Component\Capabilities
+     */
     final public function capabilities() {
         
         return $this->capabilities;
         
     }
     
+    /**
+     * Get methods object
+     *
+     * @return \Comodojo\Component\Methods
+     */
     final public function methods() {
         
         return $this->methods;
         
     }
     
+    /**
+     * Get errors object
+     *
+     * @return \Comodojo\Component\Errors
+     */
     final public function errors() {
         
         return $this->errors;
         
     }
 
+    /**
+     * Get current RPC protocol
+     *
+     * @return string
+     */
     final public function protocol() {
 
         return $this->protocol;
 
     }
 
+    /**
+     * Get current logger instance
+     *
+     * @return \Psr\Log\LoggerInterface
+     */
     final public function logger() {
 
         return $this->logger;
 
     }
     
+    /**
+     * Get parameter(s)
+     * 
+     * @param string $parameter (optional) The parameter name (null will return whole array of parameters)
+     *
+     * @return mixed
+     */
     public function get($parameter = null) {
         
         if ( empty($parameter) ) {

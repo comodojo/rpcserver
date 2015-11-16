@@ -248,6 +248,11 @@ class RpcServer {
 
     }
     
+    /**
+     * Get the ecryption key or null if no encryption is selected
+     *
+     * @return string|null
+     */
     final public function getEncryption() {
         
         return $this->encrypt;
@@ -337,6 +342,14 @@ class RpcServer {
         
     }
     
+    /**
+     * Uncan the provided payload
+     *
+     * @param string $payload
+     * 
+     * @return mixed
+     * @throws \Comodojo\Exception\RpcException
+     */
     private function uncan($payload) {
         
         $decoded = null;
@@ -396,7 +409,13 @@ class RpcServer {
     }
     
     /**
+     * Can the RPC response
+     *
+     * @param mixed   $response
      * @param boolean $error
+     * 
+     * @return mixed
+     * @throws \Comodojo\Exception\RpcException
      */
     private function can($response, $error) {
         
@@ -455,48 +474,47 @@ class RpcServer {
     }
     
     /**
-     * @param Methods $methods
+     * Inject introspection and reserved RPC methods
+     *
+     * @param \Comodojo\Component\Methods $methods
      */
     private static function setIntrospectionMethods($methods) {
         
-        $get_capabilities = RpcMethod::create("system.getCapabilities", "\Comodojo\RpcServer\Reserved\GetCapabilities", "execute")
+        $methods->add( RpcMethod::create("system.getCapabilities", "\Comodojo\RpcServer\Reserved\GetCapabilities", "execute")
             ->setDescription("This method lists all the capabilites that the RPC server has: the (more or less standard) extensions to the RPC spec that it adheres to")
-            ->setReturnType('struct');
+            ->setReturnType('struct')
+        );
         
-        $methods->add($get_capabilities);
-        
-        $list_methods = RpcMethod::create("system.listMethods", "\Comodojo\RpcServer\Introspection\ListMethods", "execute")
+        $methods->add( RpcMethod::create("system.listMethods", "\Comodojo\RpcServer\Introspection\ListMethods", "execute")
             ->setDescription("This method lists all the methods that the RPC server knows how to dispatch")
-            ->setReturnType('array');
+            ->setReturnType('array')
+        );
             
-        $methods->add($list_methods);
-        
-        $method_help = RpcMethod::create("system.methodHelp", "\Comodojo\RpcServer\Introspection\MethodHelp", "execute")
+        $methods->add( RpcMethod::create("system.methodHelp", "\Comodojo\RpcServer\Introspection\MethodHelp", "execute")
             ->setDescription("Returns help text if defined for the method passed, otherwise returns an empty string")
             ->setReturnType('string')
-            ->addParameter('string', 'method');
+            ->addParameter('string', 'method')
+        );
             
-        $methods->add($method_help);
-        
-        $method_signature = RpcMethod::create("system.methodSignature", "\Comodojo\RpcServer\Introspection\MethodSignature", "execute")
-            ->setDescription("Returns an array of known signatures (an array of arrays) for the method name passed. 
-        If no signatures are known, returns a none-array (test for type != array to detect missing signature)")
+        $methods->add( RpcMethod::create("system.methodSignature", "\Comodojo\RpcServer\Introspection\MethodSignature", "execute")
+            ->setDescription("Returns an array of known signatures (an array of arrays) for the method name passed.". 
+                "If no signatures are known, returns a none-array (test for type != array to detect missing signature)")
             ->setReturnType('array')
-            ->addParameter('string', 'method');
+            ->addParameter('string', 'method')
+        );
         
-        $methods->add($method_signature);
-            
-        $multicall = RpcMethod::create("system.multicall", "\Comodojo\RpcServer\Reserved\Multicall", "execute")
+        $methods->add( RpcMethod::create("system.multicall", "\Comodojo\RpcServer\Reserved\Multicall", "execute")
             ->setDescription("Boxcar multiple RPC calls in one request. See http://www.xmlrpc.com/discuss/msgReader\$1208 for details")
             ->setReturnType('array')
-            ->addParameter('array', 'requests');
-            
-        $methods->add($multicall);
-    
+            ->addParameter('array', 'requests')
+        );
+
     }
     
     /**
-     * @param Capabilities $capabilities
+     * Inject supported capabilities
+     *
+     * @param \Comodojo\Component\Capabilities $capabilities
      */
     private static function setCapabilities($capabilities) {
 
@@ -517,6 +535,11 @@ class RpcServer {
     
     }
 
+    /**
+     * Inject standard and RPC errors
+     *
+     * @param \Comodojo\Component\Errors $errors
+     */
     private static function setErrors($errors) {
 
         $std_rpc_errors = array(

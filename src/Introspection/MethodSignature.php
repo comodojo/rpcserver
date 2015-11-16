@@ -3,7 +3,7 @@
 use \Comodojo\Exception\RpcException;
 
 /** 
- * tbw
+ * The system.methodSignature method implementation
  * 
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -22,6 +22,13 @@ use \Comodojo\Exception\RpcException;
  
 class MethodSignature {
 
+    /**
+     * Execute call
+     *
+     * @param \Comodojo\RpcServer\Request\Parameters $params
+     * 
+     * @return array
+     */
     final public static function execute($params) {
         
         $asked_method = $params->get('method');

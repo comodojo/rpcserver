@@ -5,7 +5,7 @@ use \Comodojo\Exception\RpcException;
 use \Exception;
 
 /** 
- * tbw
+ * The JSONRPC processor
  * 
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -24,16 +24,48 @@ use \Exception;
  
 class JsonProcessor {
 
-    private $parameters;
+    /**
+     * A parameters object
+     *
+     * @var \Comodojo\RpcServer\Request\Parameters
+     */
+    private $parameters = null;
     
+    /**
+     * Array of requests
+     *
+     * @var array
+     */
     private $requests = array();
     
+    /**
+     * Array of results
+     *
+     * @var array
+     */
     private $results = array();
 
+    /**
+     * Internal flag to identify a batch request
+     *
+     * @var bool
+     */
     private $is_batch_request = false;
 
+    /**
+     * Current logger
+     *
+     * @var \Psr\Log\LoggerInterface
+     */
     private $logger = null;
     
+    /**
+     * Class constructor
+     *
+     * @param string                                 $payload
+     * @param \Comodojo\RpcServer\Request\Parameters $parameters
+     * @param \Psr\Log\LoggerInterface               $logger
+     */
     public function __construct($payload, Parameters $parameters, \Psr\Log\LoggerInterface $logger) {
 
         $this->logger = $logger;
@@ -46,6 +78,12 @@ class JsonProcessor {
         
     }
     
+    /**
+     * Run the processor and exec callback(s)
+     *
+     * @return mixed
+     * @throws Exception
+     */
     public function run() {
         
         foreach ( $this->requests as $request ) {
@@ -105,6 +143,16 @@ class JsonProcessor {
         
     }
     
+    /**
+     * Static constructor - start processor
+     *
+     * @param string                                 $payload
+     * @param \Comodojo\RpcServer\Request\Parameters $parameters
+     * @param \Psr\Log\LoggerInterface               $logger
+     * 
+     * @return mixed
+     * @throws Exception
+     */
     public static function process($payload, Parameters $parameters, \Psr\Log\LoggerInterface $logger) {
     
         try {
@@ -112,10 +160,6 @@ class JsonProcessor {
             $processor = new JsonProcessor($payload, $parameters, $logger);
             
             $return = $processor->run();
-            
-        } catch (RpcException $re) {
-            
-            throw $re;
             
         } catch (Exception $e) {
             
@@ -127,6 +171,13 @@ class JsonProcessor {
         
     }
 
+    /**
+     * Preprocess json payload
+     *
+     * @param string $payload
+     * 
+     * @return array
+     */
     private static function preprocessJsonPayload($payload) {
         
         $requests = array();
@@ -149,6 +200,13 @@ class JsonProcessor {
         
     }
     
+    /**
+     * Preprocess a single json request
+     *
+     * @param array $request
+     * 
+     * @return array
+     */
     private static function preprocessJsonRequest($request) {
         
         // check for required parameters
@@ -179,6 +237,15 @@ class JsonProcessor {
         
     }
     
+    /**
+     * Exec a single request
+     *
+     * @param string $request
+     * @param array  $parameters
+     * 
+     * @return mixed
+     * @throws RpcException
+     */
     private function runSingleRequest($request_method, $parameters) {
         
         try {
@@ -218,7 +285,7 @@ class JsonProcessor {
         
         try {
         
-            $return = empty($method) ? call_user_func($callback, $this->parameters) : call_user_func(Array($callback, $method), $this->parameters);
+            $return = empty($method) ? call_user_func($callback, $this->parameters) : call_user_func(array($callback, $method), $this->parameters);
 
         } catch (RpcException $re) {
             
@@ -245,6 +312,15 @@ class JsonProcessor {
         
     }
     
+    /**
+     * Pack a json error response
+     *
+     * @param integer $code
+     * @param string  $message
+     * @param integer $id
+     * 
+     * @return array|null
+     */
     private static function packJsonError($code, $message, $id) {
         
         if ( !is_null($id) ) {
@@ -266,6 +342,14 @@ class JsonProcessor {
         
     }
     
+    /**
+     * Pack a json success response
+     *
+     * @param mixed   $result
+     * @param integer $id
+     * 
+     * @return array
+     */
     private static function packJsonSuccess($result, $id) {
         
         if ( !is_null($id) ) {
@@ -276,10 +360,23 @@ class JsonProcessor {
                 'id' => $id
             );
         
+        } else {
+
+            return null;
+
         }
         
     }
     
+    /**
+     * Create an associative array of $name => $parameter from current signature
+     *
+     * @param array   $provided
+     * @param srting  $method
+     * @param integer $selected_signature
+     * 
+     * @return array
+     */
     private static function matchParameters($provided, $method, $selected_signature) {
         
         $parameters = array();
@@ -298,6 +395,14 @@ class JsonProcessor {
         
     }
     
+    /**
+     * Check if a request is sustainable (i.e. if method is registered)
+     *
+     * @param string $request_method
+     * 
+     * @return \Comodojo\RpcServer\RpcMethod
+     * @throws \Comodojo\Exception\RpcException
+     */
     private function checkRequestSustainability($request_method) {
         
         $method = $this->parameters->methods()->get($request_method);
@@ -308,6 +413,15 @@ class JsonProcessor {
         
     }
     
+    /**
+     * Check if a request is consistent (i.e. if it matches one of method's signatures)
+     *
+     * @param string $registered_method
+     * @param array  $parameters
+     * 
+     * @return int
+     * @throws \Comodojo\Exception\RpcException
+     */
     private function checkRequestConsistence($registered_method, $parameters) {
 
         $signatures = $registered_method->getSignatures(false);
@@ -322,6 +436,14 @@ class JsonProcessor {
         
     }
 
+    /**
+     * Check if call match a signature
+     *
+     * @param array  $provided
+     * @param array  $requested
+     * 
+     * @return bool
+     */
     private static function checkSignatureMatch($provided, $requested) {
 
         if ( is_object($provided) ) {

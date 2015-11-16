@@ -3,7 +3,9 @@
 use \Exception;
 
 /** 
- * tbw
+ * RPC Method object
+ * 
+ * It create a method's object ready to inject into RpcServer.
  * 
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -22,6 +24,11 @@ use \Exception;
  
 class RpcMethod {
     
+    /**
+     * Generic-to-RPC values map
+     *
+     * @var array $rpcvalues
+     */
     public static $rpcvalues = array(
         "i4" => "int",
         "int" => "int",
@@ -41,18 +48,57 @@ class RpcMethod {
         "undefined" => "undefined"
     );
     
+    /**
+     * Name of method
+     *
+     * @var string
+     */
     private $name = null;
     
+    /**
+     * Callback class|function
+     *
+     * @var string|function
+     */
     private $callback = null;
     
+    /**
+     * Callback method (if any)
+     *
+     * @var null|string
+     */
     private $method = null;
     
+    /**
+     * Description of method
+     *
+     * @var string
+     */
     private $description = null;
     
+    /**
+     * Array of supported signatures
+     *
+     * @var array
+     */
     private $signatures = array();
 
+    /**
+     * Internal pointer to current signature
+     *
+     * @var int
+     */
     private $current_signature = null;
 
+    /**
+     * Class constructor
+     *
+     * @param string            $name
+     * @param string|function   $callback
+     * @param string|null       $method
+     * 
+     * @throws Exception
+     */
     public function __construct($name, $callback, $method = null) {
         
         if ( !is_string($name) ) throw new Exception("RPC method exception: invalid or undefined name");
@@ -69,24 +115,46 @@ class RpcMethod {
         
     }
     
+    /**
+     * Get the method's name
+     *
+     * @return string
+     */
     public function getName() {
         
         return $this->name;
         
     }
     
+    /**
+     * Get the method's callback
+     *
+     * @return string|function
+     */
     public function getCallback() {
         
         return $this->callback;
         
     }
     
+    /**
+     * Get the method's method
+     *
+     * @return string|null
+     */
     public function getMethod() {
         
         return $this->method;
         
     }
     
+    /**
+     * Set the method's description
+     * 
+     * @param string $description
+     *
+     * @return \Comodojo\RpcServer\RpcMethod
+     */
     public function setDescription($description = null) {
         
         if ( empty($description) ) $this->description = null;
@@ -99,12 +167,22 @@ class RpcMethod {
         
     }
     
+    /**
+     * Get the method's method
+     *
+     * @return string|null
+     */
     public function getDescription() {
         
         return $this->description;
         
     }
 
+    /**
+     * Add a signature and switch internal pointer
+     *
+     * @return \Comodojo\RpcServer\RpcMethod
+     */
     public function addSignature() {
 
         $signature = array(
@@ -120,6 +198,13 @@ class RpcMethod {
 
     }
 
+    /**
+     * Get the method's signatures
+     *
+     * @param bool $compact (default) Compact signatures in a format compatible with system.methodSignature
+     * 
+     * @return array
+     */
     public function getSignatures($compact = true) {
 
         if ( $compact ) {
@@ -142,6 +227,13 @@ class RpcMethod {
 
     }
 
+    /**
+     * Get the current method's signature
+     *
+     * @param bool $compact (default) Compact signatures in a format compatible with system.methodSignature
+     * 
+     * @return array
+     */
     public function getSignature($compact = true) {
 
         if ( $compact ) {
@@ -156,6 +248,14 @@ class RpcMethod {
         
     }
 
+    /**
+     * Delete a signature
+     *
+     * @param integer $signature The signature's ID
+     * 
+     * @return bool
+     * @throws Exception
+     */
     public function deleteSignature($signature) {
 
         if ( !is_integer($signature) || !isset($this->signatures[$signature]) ) {
@@ -170,6 +270,14 @@ class RpcMethod {
 
     }
 
+    /**
+     * Select a signature
+     *
+     * @param integer $signature The signature's ID
+     * 
+     * @return \Comodojo\RpcServer\RpcMethod
+     * @throws Exception
+     */
     public function selectSignature($signature) {
 
         if ( !is_integer($signature) || !isset($this->signatures[$signature]) ) {
@@ -184,6 +292,14 @@ class RpcMethod {
 
     }
     
+    /**
+     * Set the current signature's return type
+     *
+     * @param string $type
+     * 
+     * @return \Comodojo\RpcServer\RpcMethod
+     * @throws Exception
+     */
     public function setReturnType($type) {
         
         if ( !in_array($type, self::$rpcvalues) ) throw new Exception("RPC method exception: invalid return type");
@@ -194,12 +310,26 @@ class RpcMethod {
         
     }
     
+    /**
+     * Get the current signature's return type
+     *
+     * @return string
+     */
     public function getReturnType() {
         
         return $this->signatures[$this->current_signature]["RETURNTYPE"];
         
     }
     
+    /**
+     * Add a parameter to current signature
+     *
+     * @param string $type
+     * @param string $name
+     * 
+     * @return \Comodojo\RpcServer\RpcMethod
+     * @throws Exception
+     */
     public function addParameter($type, $name) {
         
         if ( !in_array($type, self::$rpcvalues) ) throw new Exception("RPC method exception: invalid parameter type");
@@ -212,6 +342,14 @@ class RpcMethod {
         
     }
     
+    /**
+     * Delete a parameter from current signature
+     *
+     * @param string $name
+     * 
+     * @return \Comodojo\RpcServer\RpcMethod
+     * @throws Exception
+     */
     public function deleteParameter($name) {
         
         if ( !array_key_exists($name, $this->signatures[$this->current_signature]["PARAMETERS"]) ) throw new Exception("RPC method exception: cannot find parameter");
@@ -222,14 +360,31 @@ class RpcMethod {
         
     }
     
-    public function getParameters($method = 'ASSOC') {
+    /**
+     * Get current signature's parameters
+     *
+     * @param string $format The output array format (ASSOC|NUMERIC)
+     * 
+     * @return array
+     */
+    public function getParameters($format = 'ASSOC') {
         
-        if ( $method == 'NUMERIC' ) return array_values($this->signatures[$this->current_signature]["PARAMETERS"]);
+        if ( $format == 'NUMERIC' ) return array_values($this->signatures[$this->current_signature]["PARAMETERS"]);
         
         else return $this->signatures[$this->current_signature]["PARAMETERS"];
         
     }
     
+    /**
+     * Static class constructor - create an RpcMethod object
+     *
+     * @param string            $name
+     * @param string|function   $callback
+     * @param string|null       $method
+     * 
+     * @return \Comodojo\RpcServer\RpcMethod
+     * @throws Exception
+     */
     public static function create($name, $callback, $method = null) {
         
         try {
@@ -246,6 +401,14 @@ class RpcMethod {
         
     }
     
+    /**
+     * Check if provided ($callback::$method) is callable
+     *
+     * @param string|function   $callback
+     * @param string|null       $method
+     * 
+     * @return bool
+     */
     private static function checkIfCallable($callback, $method) {
         
         return empty($method) ? is_callable($callback) : is_callable($callback, $method);

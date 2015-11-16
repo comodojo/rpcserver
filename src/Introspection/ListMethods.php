@@ -1,7 +1,7 @@
 <?php namespace Comodojo\RpcServer\Introspection;
 
 /** 
- * tbw
+ * The system.listMethods method implementation
  * 
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -20,6 +20,13 @@
  
 class ListMethods {
 
+    /**
+     * Execute call
+     *
+     * @param \Comodojo\RpcServer\Request\Parameters $params
+     * 
+     * @return array
+     */
     final public static function execute($params) {
         
         $methods = $params->methods()->get();

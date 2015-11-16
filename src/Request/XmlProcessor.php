@@ -5,7 +5,7 @@ use \Comodojo\Exception\RpcException;
 use \Exception;
 
 /** 
- * tbw
+ * The XMLRPC processor
  * 
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -24,16 +24,48 @@ use \Exception;
  
 class XmlProcessor {
 
+    /**
+     * Requested RPC method
+     *
+     * @var string
+     */
     private $method;
     
-    private $parameters;
+    /**
+     * A parameters object
+     *
+     * @var \Comodojo\RpcServer\Request\Parameters
+     */
+    private $parameters = null;
     
-    private $registered_method;
+    /**
+     * Selected method
+     *
+     * @var \Comodojo\RpcServer\RpcMethod
+     */
+    private $registered_method = null;
 
+    /**
+     * Selected signature
+     *
+     * @var int
+     */
     private $selected_signature = null;
 
+    /**
+     * Current logger
+     *
+     * @var \Psr\Log\LoggerInterface
+     */
     private $logger = null;
     
+    /**
+     * Class constructor
+     *
+     * @param string                                 $payload
+     * @param \Comodojo\RpcServer\Request\Parameters $parameters
+     * @param \Psr\Log\LoggerInterface               $logger
+     */
     public function __construct($payload, Parameters $parameters, \Psr\Log\LoggerInterface $logger) {
         
         $this->logger = $logger;
@@ -75,6 +107,12 @@ class XmlProcessor {
         
     }
     
+    /**
+     * Run the processor and exec callback(s)
+     *
+     * @return mixed
+     * @throws Exception
+     */
     public function run() {
         
         $callback = $this->registered_method->getCallback();
@@ -125,6 +163,17 @@ class XmlProcessor {
         
     }
     
+    /**
+     * Static constructor - start processor
+     *
+     * @param string                                 $payload
+     * @param \Comodojo\RpcServer\Request\Parameters $parameters
+     * @param \Psr\Log\LoggerInterface               $logger
+     * 
+     * @return mixed
+     * @throws \Comodojo\Exception\RpcException
+     * @throws Exception
+     */
     public static function process($payload, Parameters $parameters, \Psr\Log\LoggerInterface $logger) {
     
         try {
@@ -147,6 +196,12 @@ class XmlProcessor {
         
     }
 
+    /**
+     * Check if a request is sustainable (i.e. if method is registered)
+     *
+     * @return \Comodojo\RpcServer\RpcMethod
+     * @throws \Comodojo\Exception\RpcException
+     */
     private function checkRequestSustainability() {
         
         $method = $this->parameters->methods()->get($this->method);
@@ -157,6 +212,14 @@ class XmlProcessor {
         
     }
     
+    /**
+     * Check if a request is consistent (i.e. if it matches one of method's signatures)
+     *
+     * @param array  $parameters
+     * 
+     * @return int
+     * @throws \Comodojo\Exception\RpcException
+     */
     private function checkRequestConsistence($provided_parameters) {
 
         $signatures = $this->registered_method->getSignatures(false);
@@ -177,6 +240,15 @@ class XmlProcessor {
         
     }
     
+    /**
+     * Create an associative array of $name => $parameter from current signature
+     *
+     * @param array   $provided
+     * @param srting  $method
+     * @param integer $selected_signature
+     * 
+     * @return array
+     */
     private static function matchParameters($provided, $method, $selected_signature) {
         
         $parameters = array();
@@ -195,6 +267,13 @@ class XmlProcessor {
         
     }
     
+    /**
+     * Preprocess a single xml request
+     *
+     * @param array $payload
+     * 
+     * @return array
+     */
     private static function preprocessRequest($payload) {
 
         return (is_array($payload[0])) ? array('system.multicall', array($payload)) : array($payload[0], $payload[1]);

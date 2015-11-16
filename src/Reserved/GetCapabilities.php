@@ -1,7 +1,7 @@
 <?php namespace Comodojo\RpcServer\Reserved;
 
 /** 
- * tbw
+ * The system.getCapabilities method implementation
  * 
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -20,6 +20,13 @@
  
 class GetCapabilities {
 
+    /**
+     * Execute call
+     *
+     * @param \Comodojo\RpcServer\Request\Parameters $params
+     * 
+     * @return array
+     */
     final public static function execute($params) {
         
         return $params->capabilities()->get();
