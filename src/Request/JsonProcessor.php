@@ -62,7 +62,7 @@ class JsonProcessor {
     /**
      * Class constructor
      *
-     * @param string                                 $payload
+     * @param array|object                           $payload
      * @param \Comodojo\RpcServer\Request\Parameters $parameters
      * @param \Psr\Log\LoggerInterface               $logger
      */
@@ -146,7 +146,7 @@ class JsonProcessor {
     /**
      * Static constructor - start processor
      *
-     * @param string                                 $payload
+     * @param array|object                           $payload
      * @param \Comodojo\RpcServer\Request\Parameters $parameters
      * @param \Psr\Log\LoggerInterface               $logger
      * 
@@ -174,7 +174,7 @@ class JsonProcessor {
     /**
      * Preprocess json payload
      *
-     * @param string $payload
+     * @param array|object $payload
      * 
      * @return array
      */
@@ -203,7 +203,7 @@ class JsonProcessor {
     /**
      * Preprocess a single json request
      *
-     * @param array $request
+     * @param array|object $request
      * 
      * @return array
      */
@@ -240,7 +240,7 @@ class JsonProcessor {
     /**
      * Exec a single request
      *
-     * @param string $request
+     * @param string $request_method
      * @param array  $parameters
      * 
      * @return mixed
@@ -371,9 +371,9 @@ class JsonProcessor {
     /**
      * Create an associative array of $name => $parameter from current signature
      *
-     * @param array   $provided
-     * @param srting  $method
-     * @param integer $selected_signature
+     * @param array                         $provided
+     * @param \Comodojo\RpcServer\RpcMethod $method
+     * @param integer                       $selected_signature
      * 
      * @return array
      */
@@ -416,8 +416,8 @@ class JsonProcessor {
     /**
      * Check if a request is consistent (i.e. if it matches one of method's signatures)
      *
-     * @param string $registered_method
-     * @param array  $parameters
+     * @param \Comodojo\RpcServer\RpcMethod $registered_method
+     * @param array                         $parameters
      * 
      * @return int
      * @throws \Comodojo\Exception\RpcException

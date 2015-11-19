@@ -251,7 +251,7 @@ class RpcServer {
     /**
      * Get the ecryption key or null if no encryption is selected
      *
-     * @return string|null
+     * @return string
      */
     final public function getEncryption() {
         
@@ -414,7 +414,7 @@ class RpcServer {
      * @param mixed   $response
      * @param boolean $error
      * 
-     * @return mixed
+     * @return string
      * @throws \Comodojo\Exception\RpcException
      */
     private function can($response, $error) {
@@ -476,7 +476,7 @@ class RpcServer {
     /**
      * Inject introspection and reserved RPC methods
      *
-     * @param \Comodojo\Component\Methods $methods
+     * @param \Comodojo\RpcServer\Component\Methods $methods
      */
     private static function setIntrospectionMethods($methods) {
         
@@ -514,7 +514,7 @@ class RpcServer {
     /**
      * Inject supported capabilities
      *
-     * @param \Comodojo\Component\Capabilities $capabilities
+     * @param \Comodojo\RpcServer\Component\Capabilities $capabilities
      */
     private static function setCapabilities($capabilities) {
 
@@ -538,7 +538,7 @@ class RpcServer {
     /**
      * Inject standard and RPC errors
      *
-     * @param \Comodojo\Component\Errors $errors
+     * @param \Comodojo\RpcServer\Component\Errors $errors
      */
     private static function setErrors($errors) {
 

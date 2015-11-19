@@ -69,7 +69,7 @@ class Multicall {
      * Perform a single call
      *
      * @param array                                  $request
-     * @param \Comodojo\RpcServer\Request\Parameters $params
+     * @param \Comodojo\RpcServer\Request\Parameters $parameters_object
      * 
      * @return mixed
      */

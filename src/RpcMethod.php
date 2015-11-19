@@ -93,9 +93,9 @@ class RpcMethod {
     /**
      * Class constructor
      *
-     * @param string            $name
-     * @param string|function   $callback
-     * @param string|null       $method
+     * @param string    $name
+     * @param mixed     $callback
+     * @param string    $method
      * 
      * @throws Exception
      */
@@ -129,7 +129,7 @@ class RpcMethod {
     /**
      * Get the method's callback
      *
-     * @return string|function
+     * @return callable
      */
     public function getCallback() {
         
@@ -140,7 +140,7 @@ class RpcMethod {
     /**
      * Get the method's method
      *
-     * @return string|null
+     * @return string
      */
     public function getMethod() {
         

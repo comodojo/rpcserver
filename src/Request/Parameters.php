@@ -45,21 +45,21 @@ class Parameters {
     /**
      * Supported capabilities
      *
-     * @var \Comodojo\Component\Capabilities
+     * @var \Comodojo\RpcServer\Component\Capabilities
      */
     private $capabilities = null;
     
     /**
      * Implemented methods
      *
-     * @var \Comodojo\Component\Methods
+     * @var \Comodojo\RpcServer\Component\Methods
      */
     private $methods = null;
     
     /**
      * Predefined errors
      *
-     * @var \Comodojo\Component\Errors
+     * @var \Comodojo\RpcServer\Component\Errors
      */
     private $errors = null;
 
@@ -80,11 +80,11 @@ class Parameters {
     /**
      * Class constructor
      *
-     * @param \Comodojo\Component\Capabilities  $capabilities
-     * @param \Comodojo\Component\Methods       $methods
-     * @param \Comodojo\Component\Errors        $errors
-     * @param \Psr\Log\LoggerInterface          $logger
-     * @param string                            $protocol
+     * @param \Comodojo\RpcServer\Component\Capabilities  $capabilities
+     * @param \Comodojo\RpcServer\Component\Methods       $methods
+     * @param \Comodojo\RpcServer\Component\Errors        $errors
+     * @param \Psr\Log\LoggerInterface                    $logger
+     * @param string                                      $protocol
      */
     public function __construct(Capabilities $capabilities, Methods $methods, Errors $errors, LoggerInterface $logger, $protocol) {
         
@@ -118,7 +118,7 @@ class Parameters {
     /**
      * Get capabilities object
      *
-     * @return \Comodojo\Component\Capabilities
+     * @return \Comodojo\RpcServer\Component\Capabilities
      */
     final public function capabilities() {
         
@@ -129,7 +129,7 @@ class Parameters {
     /**
      * Get methods object
      *
-     * @return \Comodojo\Component\Methods
+     * @return \Comodojo\RpcServer\Component\Methods
      */
     final public function methods() {
         
@@ -140,7 +140,7 @@ class Parameters {
     /**
      * Get errors object
      *
-     * @return \Comodojo\Component\Errors
+     * @return \Comodojo\RpcServer\Component\Errors
      */
     final public function errors() {
         

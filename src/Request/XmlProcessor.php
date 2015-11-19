@@ -62,7 +62,7 @@ class XmlProcessor {
     /**
      * Class constructor
      *
-     * @param string                                 $payload
+     * @param array                                  $payload
      * @param \Comodojo\RpcServer\Request\Parameters $parameters
      * @param \Psr\Log\LoggerInterface               $logger
      */
@@ -166,7 +166,7 @@ class XmlProcessor {
     /**
      * Static constructor - start processor
      *
-     * @param string                                 $payload
+     * @param array                                  $payload
      * @param \Comodojo\RpcServer\Request\Parameters $parameters
      * @param \Psr\Log\LoggerInterface               $logger
      * 
@@ -215,7 +215,7 @@ class XmlProcessor {
     /**
      * Check if a request is consistent (i.e. if it matches one of method's signatures)
      *
-     * @param array  $parameters
+     * @param array  $provided_parameters
      * 
      * @return int
      * @throws \Comodojo\Exception\RpcException
@@ -243,9 +243,9 @@ class XmlProcessor {
     /**
      * Create an associative array of $name => $parameter from current signature
      *
-     * @param array   $provided
-     * @param srting  $method
-     * @param integer $selected_signature
+     * @param array                         $provided
+     * @param \Comodojo\RpcServer\RpcMethod $method
+     * @param integer                       $selected_signature
      * 
      * @return array
      */
