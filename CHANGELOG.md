@@ -2,4 +2,8 @@
 
 ## Version 1.0.0
 
-- Initial release
+- Initial stable release
+
+## Version 1.0.0-beta1
+
+- first beta pre-release

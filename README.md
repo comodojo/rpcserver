@@ -22,7 +22,7 @@ Following capabilities are supported out of the box:
 - [faults_interop](http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php)
 - [json-rpc](http://www.jsonrpc.org/specification)
 
-Additional capabilities could be implemented [extending the library](extending-the-library).
+Additional capabilities could be implemented [extending the library](#extending-the-library).
 
 ## Installation
 
@@ -85,7 +85,7 @@ It requires basically a method name and a callable, provided as labmda function,
 
 Parameters can be added using `addParameter()` method. Multiple signatures could be specified using `addSignature()`.
 
-For example, to create a **my.method** RPC method mapped to `\My\RpcClass::mymethod()` that supports two different signatures:
+For example, to create a **my.method** RPC method mapped to `\My\RpcClass::mymethod()` that has two different signatures:
 
 ```php
 
@@ -105,7 +105,7 @@ $method = \Comodojo\RpcServer\RpcMethod::create("my.method", "\My\RpcClass", "my
 
 ```
 
-Signatures are automatically matched by server as well as received parameters; if a request does not match any method signature, a "Invalid params" (-32602) error is returned back to client.
+Signatures are automatically matched by server as well as received parameters; if a request does not match any valid signature, a "Invalid params" (-32602) error is returned back to client.
 
 The `\My\RpcClass::mymethod()` should expect a `\Comodojo\RpcServer\Request\Parameters` object that provides received parameters, server properties and logging interface.
 
