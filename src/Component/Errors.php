@@ -105,7 +105,7 @@ class Errors {
      *
      * @param int $code
      *
-     * @return array|null
+     * @return mixed
      */
     final public function get($code = null) {
 

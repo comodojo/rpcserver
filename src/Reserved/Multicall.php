@@ -111,7 +111,7 @@ class Multicall {
      * Pack an XMLRPC error
      *
      * @param integer $code
-     * @param srting  $message
+     * @param string  $message
      *
      * @return mixed
      */

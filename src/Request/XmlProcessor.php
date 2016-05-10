@@ -229,10 +229,6 @@ class XmlProcessor {
 
         foreach ( $signatures as $num=>$signature ) {
 
-            // $requested_parameters = array_values($signature["PARAMETERS"]);
-
-            // $requested_parameters_count = count($requested_parameters);
-
             $requested_parameters_count = count($signature["PARAMETERS"]);
 
             if ( $provided_parameters_count != $requested_parameters_count ) {
