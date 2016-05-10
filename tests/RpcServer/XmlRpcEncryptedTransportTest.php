@@ -37,11 +37,11 @@ class XmlRpcEncryptedTransportTest extends \PHPUnit_Framework_TestCase {
     }
 
     protected function setUp() {
-        
+
         $this->server = new RpcServer(RpcServer::XMLRPC);
 
         $this->server->setEncryption($this->key);
-    
+
     }
 
     protected function tearDown() {

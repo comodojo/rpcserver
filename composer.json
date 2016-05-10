@@ -7,7 +7,9 @@
         "comodojo",
         "rpc",
         "xmlrpc",
-        "jsonrpc"
+        "jsonrpc",
+        "rpc server",
+        "phprpc"
     ],
     "homepage": "https://comodojo.org",
      "support": {
@@ -29,7 +31,7 @@
         "php": ">=5.3.0",
         "comodojo/xmlrpc": "^1.1",
         "comodojo/exceptions": "@stable",
-        "phpseclib/phpseclib": "0.3.*",
+        "phpseclib/phpseclib": "^1.0",
         "psr/log": "~1.0"
     },
     "require-dev": {

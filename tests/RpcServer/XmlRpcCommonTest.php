@@ -24,9 +24,9 @@ class XmlRpcCommonTest extends CommonCases {
     }
 
     protected function setUp() {
-        
+
         $this->server = new RpcServer(RpcServer::XMLRPC);
-    
+
     }
 
     protected function tearDown() {

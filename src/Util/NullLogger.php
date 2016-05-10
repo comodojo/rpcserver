@@ -2,15 +2,15 @@
 
 use Psr\Log\LoggerInterface;
 
-/** 
+/**
  * A simple, PSR-3 compliant, null logger.
- * 
+ *
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
  * @license     MIT
  *
  * LICENSE:
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,7 +21,7 @@ use Psr\Log\LoggerInterface;
  */
 
 class NullLogger implements LoggerInterface {
-    
+
     /**
      * emergency
      *

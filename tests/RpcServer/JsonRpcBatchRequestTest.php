@@ -11,11 +11,11 @@ class JsonRpcBatchRequestTest extends PHPUnit_Framework_TestCase {
 
         $rand = rand(1,1000);
 
-        $this->current_id[] = $rand; 
+        $this->current_id[] = $rand;
 
         $call = array(
             "jsonrpc" => "2.0",
-            "method" => $method, 
+            "method" => $method,
             "params" => $parameters,
             "id" => $rand
         );
@@ -31,7 +31,7 @@ class JsonRpcBatchRequestTest extends PHPUnit_Framework_TestCase {
         $return = array();
 
         foreach ($responses as $response) {
-            
+
             if ( $response->jsonrpc != "2.0" ) throw new Exception("Server replies with invalid jsonrpc version");
 
             if ( !in_array($response->id, $this->current_id) ) throw new Exception("Server replies wiht invalid ID");
@@ -51,9 +51,9 @@ class JsonRpcBatchRequestTest extends PHPUnit_Framework_TestCase {
     }
 
     protected function setUp() {
-        
+
         $this->server = new RpcServer(RpcServer::JSONRPC);
-    
+
     }
 
     protected function tearDown() {

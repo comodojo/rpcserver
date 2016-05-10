@@ -1,14 +1,14 @@
 <?php namespace Comodojo\RpcServer\Component;
 
-/** 
+/**
  * RPC capabilities manager
- * 
+ *
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
  * @license     MIT
  *
  * LICENSE:
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -17,7 +17,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
- 
+
 class Capabilities {
 
     /**
@@ -44,7 +44,7 @@ class Capabilities {
         $this->logger = $logger;
 
     }
-    
+
     /**
      * Add a capability
      *
@@ -55,13 +55,13 @@ class Capabilities {
      * @return bool
      */
     final public function add($capability, $specUrl, $specVersion) {
-        
+
         if ( array_key_exists($capability, $this->rpc_capabilities) ) {
-            
+
             $this->logger->warning("Cannot add capability ".$capability.": duplicate entry");
 
             return false;
-            
+
         } else {
 
             $this->rpc_capabilities[$capability] = array(
@@ -70,13 +70,13 @@ class Capabilities {
             );
 
             $this->logger->info("Added capability ".$capability);
-            
+
             return true;
-            
+
         }
-        
+
     }
-    
+
     /**
      * Delete a capability
      *
@@ -85,25 +85,25 @@ class Capabilities {
      * @return bool
      */
     final public function delete($capability) {
-        
+
         if ( array_key_exists($capability, $this->rpc_capabilities) ) {
-            
+
             unset($this->rpc_capabilities[$capability]);
 
             $this->logger->info("Deleted capability ".$capability);
-            
+
             return true;
-            
+
         } else {
-            
+
             $this->logger->warning("Cannot delete capability ".$capability.": entry not found");
 
             return false;
-            
+
         }
-        
+
     }
-    
+
     /**
      * Get registered capability (capabilities)
      *
@@ -116,9 +116,9 @@ class Capabilities {
         if ( is_null($capability) ) return $this->rpc_capabilities;
 
         else if ( array_key_exists($capability, $this->rpc_capabilities) ) return $this->rpc_capabilities[$capability];
-        
+
         else return null;
-        
+
     }
-    
+
 }

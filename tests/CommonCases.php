@@ -200,12 +200,12 @@ abstract class CommonCases extends \PHPUnit_Framework_TestCase {
 
     public function testCustomError() {
 
-        $method = \Comodojo\RpcServer\RpcMethod::create("test.exception", function($params) { 
+        $method = \Comodojo\RpcServer\RpcMethod::create("test.exception", function($params) {
 
             $error = $params->errors()->get(-32602);
 
             throw new \Comodojo\Exception\RpcException($error, -32602);
-            
+
         })->setDescription("Test Method")
         ->setReturnType('string');
 
@@ -236,6 +236,43 @@ abstract class CommonCases extends \PHPUnit_Framework_TestCase {
             $this->assertEquals('Invalid params', $decoded->message);
 
         }
+
+    }
+
+    public function testEqualLengthMultipleSignatureMethod () {
+
+        $method = \Comodojo\RpcServer\RpcMethod::create("test.multisignature", function($params) {
+
+            $a = $params->get('a');
+
+            return is_int($a) ? 'integer' : 'string';
+
+        })  ->setDescription("Test multiple, equal lenght, signatures")
+            ->setReturnType('string')
+            ->addParameter('int','a')
+            ->addSignature()
+            ->setReturnType('string')
+            ->addParameter('string','a');
+
+        $result = $this->server->methods()->add($method);
+
+        $this->assertTrue($result);
+
+        $request = $this->encodeRequest('test.multisignature', array(2));
+
+        $result = $this->server->setPayload($request)->serve();
+
+        $decoded = $this->decodeResponse($result);
+
+        $this->assertEquals('integer', $decoded);
+
+        $request = $this->encodeRequest('test.multisignature', array('test'));
+
+        $result = $this->server->setPayload($request)->serve();
+
+        $decoded = $this->decodeResponse($result);
+
+        $this->assertEquals('string', $decoded);
 
     }
 

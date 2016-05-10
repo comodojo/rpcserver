@@ -25,7 +25,7 @@ class XmlRpcMulticallTest extends \PHPUnit_Framework_TestCase {
     }
 
     protected function setUp() {
-        
+
         $this->server = new RpcServer(RpcServer::XMLRPC);
 
         $method = RpcMethod::create("test.sum", function($params) {
@@ -44,7 +44,7 @@ class XmlRpcMulticallTest extends \PHPUnit_Framework_TestCase {
             ->setReturnType('int');
 
         $this->server->methods()->add($method);
-    
+
     }
 
     protected function tearDown() {
@@ -99,7 +99,7 @@ class XmlRpcMulticallTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(-31001, $decoded[1]['faultCode']);
 
-        $this->assertEquals('Recursive system.multicall forbidden', $decoded[1]['faultString']);        
+        $this->assertEquals('Recursive system.multicall forbidden', $decoded[1]['faultString']);
 
 
     }

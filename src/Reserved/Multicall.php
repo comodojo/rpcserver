@@ -6,17 +6,17 @@ use \Comodojo\RpcServer\Request\XmlProcessor;
 use \Comodojo\Exception\RpcException;
 use \Exception;
 
-/** 
+/**
  * The system.multicall method implementation.
- * 
+ *
  * This method is available ONLY for XMLRPC protocol; json v2 SHOULD use batch requests.
- * 
+ *
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
  * @license     MIT
  *
  * LICENSE:
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,18 +25,18 @@ use \Exception;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
- 
+
 class Multicall {
 
     /**
      * Execute call
      *
      * @param \Comodojo\RpcServer\Request\Parameters $params
-     * 
+     *
      * @return array
      */
     final public static function execute($params) {
-        
+
         if ( $params->protocol() != RpcServer::XMLRPC ) {
 
             throw new RpcException($params->errors()->get(-31000), -31000);
@@ -62,7 +62,7 @@ class Multicall {
         }
 
         return $results;
-        
+
     }
 
     /**
@@ -70,7 +70,7 @@ class Multicall {
      *
      * @param array                                  $request
      * @param \Comodojo\RpcServer\Request\Parameters $parameters_object
-     * 
+     *
      * @return mixed
      */
     private static function singleCall($request, $parameters_object) {
@@ -90,17 +90,17 @@ class Multicall {
         $payload = array($request[0], $request[1]);
 
         try {
-            
+
             $result = XmlProcessor::process($payload, $parameters_object, $parameters_object->logger());
 
         } catch (RpcException $re) {
-            
+
             return self::packError($re->getCode(), $re->getMessage());
-            
+
         } catch (Exception $e) {
-            
+
             return self::packError(-32500, $re->getMessage());
-            
+
         }
 
         return $result;
@@ -112,7 +112,7 @@ class Multicall {
      *
      * @param integer $code
      * @param srting  $message
-     * 
+     *
      * @return mixed
      */
     private static function packError($code, $message) {

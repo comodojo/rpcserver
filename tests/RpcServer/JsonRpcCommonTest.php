@@ -13,7 +13,7 @@ class JsonRpcCommonTest extends CommonCases {
 
         $call = array(
             "jsonrpc" => "2.0",
-            "method" => $method, 
+            "method" => $method,
             "params" => $parameters,
             "id" => $this->current_id
         );
@@ -47,9 +47,9 @@ class JsonRpcCommonTest extends CommonCases {
     }
 
     protected function setUp() {
-        
+
         $this->server = new RpcServer(RpcServer::JSONRPC);
-    
+
     }
 
     protected function tearDown() {
@@ -73,7 +73,7 @@ class JsonRpcCommonTest extends CommonCases {
 
     public function testMulticallForbidden() {
 
-        $request = $this->encodeRequest('system.multicall', array(array('test'=>'test')));
+        $request = $this->encodeRequest('system.multicall', array(array('test.method', array('test.parameter'))));
 
         $result = $this->server->setPayload($request)->serve();
 
