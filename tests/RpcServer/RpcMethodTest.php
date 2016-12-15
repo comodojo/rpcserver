@@ -27,8 +27,6 @@ class RpcMethodTest extends \PHPUnit_Framework_TestCase {
 
                 $this->assertInstanceOf('Closure', $method->getCallback());
 
-                $this->assertNull($method->getMethod());
-
                 $signatures = $method->getSignatures();
 
                 $this->assertInternalType('array', $signatures);

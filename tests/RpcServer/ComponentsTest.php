@@ -1,10 +1,12 @@
 <?php
 
+use \Comodojo\Foundation\Logging\Manager as LogManager;
+
 class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
     public function testCapabilities() {
 
-        $logger = new \Comodojo\RpcServer\Util\NullLogger();
+        $logger = LogManager::create('rpcserver', false)->getLogger();
 
         $cap = new \Comodojo\RpcServer\Component\Capabilities($logger);
 
@@ -50,7 +52,7 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
     public function testErrors() {
 
-        $logger = new \Comodojo\RpcServer\Util\NullLogger();
+        $logger = LogManager::create('rpcserver', false)->getLogger();
 
         $err = new \Comodojo\RpcServer\Component\Errors($logger);
 
@@ -90,7 +92,7 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
     public function testMethods() {
 
-        $logger = new \Comodojo\RpcServer\Util\NullLogger();
+        $logger = LogManager::create('rpcserver', false)->getLogger();
 
         $met = new \Comodojo\RpcServer\Component\Methods($logger);
 

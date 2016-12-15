@@ -11,7 +11,7 @@ class ValidatorsTest extends \PHPUnit_Framework_TestCase {
             "double" => 42.42,
             "boolean" => true,
             "base64" => "dGhpc2lzYXRlc3QK",
-            "dateTime.iso8601" => date('c'),
+            //"dateTime.iso8601" => date('c'),
             "string" => "test",
             "array" => array(0,1,2),
             "struct" => array("this" => "is", "a" => "test"),

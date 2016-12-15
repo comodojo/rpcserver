@@ -261,8 +261,6 @@ class JsonProcessor {
 
             $callback = $registered_method->getCallback();
 
-            $method = $registered_method->getMethod();
-
         } catch (RpcException $re) {
 
             throw $re;
@@ -286,7 +284,7 @@ class JsonProcessor {
 
         try {
 
-            $return = empty($method) ? call_user_func($callback, $this->parameters) : call_user_func(array($callback, $method), $this->parameters);
+            $return = call_user_func($callback, $this->parameters);
 
         } catch (RpcException $re) {
 

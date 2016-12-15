@@ -63,13 +63,6 @@ class RpcMethod {
     private $callback = null;
 
     /**
-     * Callback method (if any)
-     *
-     * @var null|string
-     */
-    private $method = null;
-
-    /**
      * Description of method
      *
      * @var string
@@ -93,23 +86,21 @@ class RpcMethod {
     /**
      * Class constructor
      *
-     * @param string    $name
-     * @param mixed     $callback
-     * @param string    $method
+     * @param string $name
+     * @param mixed  $callback
+     * @param string $method
      *
      * @throws Exception
      */
-    public function __construct($name, $callback, $method = null) {
+    public function __construct($name, callable $callback) {
 
         if ( !is_string($name) ) throw new Exception("RPC method exception: invalid or undefined name");
 
-        if ( !self::checkIfCallable($callback, $method) ) throw new Exception("RPC method exception, invalid or undefined callback");
+        if ( !is_callable($callback) ) throw new Exception("RPC method exception, invalid or undefined callback");
 
         $this->name = $name;
 
         $this->callback = $callback;
-
-        $this->method = $method;
 
         $this->addSignature();
 
@@ -138,22 +129,11 @@ class RpcMethod {
     }
 
     /**
-     * Get the method's method
-     *
-     * @return string
-     */
-    public function getMethod() {
-
-        return $this->method;
-
-    }
-
-    /**
      * Set the method's description
      *
      * @param string $description
      *
-     * @return \Comodojo\RpcServer\RpcMethod
+     * @return $this
      */
     public function setDescription($description = null) {
 
@@ -181,7 +161,7 @@ class RpcMethod {
     /**
      * Add a signature and switch internal pointer
      *
-     * @return \Comodojo\RpcServer\RpcMethod
+     * @return $this
      */
     public function addSignature() {
 
@@ -275,7 +255,7 @@ class RpcMethod {
      *
      * @param integer $signature The signature's ID
      *
-     * @return \Comodojo\RpcServer\RpcMethod
+     * @return $this
      * @throws Exception
      */
     public function selectSignature($signature) {
@@ -297,7 +277,7 @@ class RpcMethod {
      *
      * @param string $type
      *
-     * @return \Comodojo\RpcServer\RpcMethod
+     * @return $this
      * @throws Exception
      */
     public function setReturnType($type) {
@@ -327,7 +307,7 @@ class RpcMethod {
      * @param string $type
      * @param string $name
      *
-     * @return \Comodojo\RpcServer\RpcMethod
+     * @return $this
      * @throws Exception
      */
     public function addParameter($type, $name) {
@@ -347,7 +327,7 @@ class RpcMethod {
      *
      * @param string $name
      *
-     * @return \Comodojo\RpcServer\RpcMethod
+     * @return $this
      * @throws Exception
      */
     public function deleteParameter($name) {
@@ -382,7 +362,7 @@ class RpcMethod {
      * @param string|function   $callback
      * @param string|null       $method
      *
-     * @return \Comodojo\RpcServer\RpcMethod
+     * @return RpcMethod
      * @throws Exception
      */
     public static function create($name, $callback, $method = null) {
@@ -398,20 +378,6 @@ class RpcMethod {
         }
 
         return $method;
-
-    }
-
-    /**
-     * Check if provided ($callback::$method) is callable
-     *
-     * @param string|function   $callback
-     * @param string|null       $method
-     *
-     * @return bool
-     */
-    private static function checkIfCallable($callback, $method) {
-
-        return empty($method) ? is_callable($callback) : is_callable($callback, $method);
 
     }
 

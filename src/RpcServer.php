@@ -6,10 +6,11 @@ use \Comodojo\RpcServer\Component\Errors;
 use \Comodojo\RpcServer\Request\Parameters;
 use \Comodojo\RpcServer\Request\XmlProcessor;
 use \Comodojo\RpcServer\Request\JsonProcessor;
-use \Comodojo\RpcServer\Util\NullLogger;
+use \Comodojo\Foundation\Logging\Manager as LogManager;
 use \Comodojo\Xmlrpc\XmlrpcEncoder;
 use \Comodojo\Xmlrpc\XmlrpcDecoder;
-use \Crypt_AES;
+use \phpseclib\Crypt\AES;
+use \Psr\Log\LoggerInterface;
 use \Comodojo\Exception\RpcException;
 use \Comodojo\Exception\XmlrpcException;
 use \Exception;
@@ -52,37 +53,37 @@ class RpcServer {
     /**
      * Capabilities collector
      *
-     * @var \Comodojo\RpcServer\Component\Capabilities
+     * @var Capabilities
      */
-    private $capabilities = null;
+    private $capabilities;
 
     /**
      * RpcMethods collector
      *
-     * @var \Comodojo\RpcServer\Component\Methods
+     * @var Methods
      */
-    private $methods = null;
+    private $methods;
 
     /**
      * Standard Rpc Errors collector
      *
-     * @var \Comodojo\RpcServer\Component\Errors
+     * @var Errors
      */
-    private $errors = null;
+    private $errors;
 
     /**
      * The request payload, better the RAW export of 'php://input'
      *
      * @var string
      */
-    private $payload = null;
+    private $payload;
 
     /**
      * Encryption key, in case of encrypted transport
      *
      * @var string
      */
-    private $encrypt = null;
+    private $encrypt;
 
     /**
      * Current encoding
@@ -96,7 +97,7 @@ class RpcServer {
      *
      * @var string
      */
-    private $protocol = null;
+    private $protocol;
 
     /**
      * Supported RPC protocols
@@ -115,20 +116,20 @@ class RpcServer {
     /**
      * Current logger
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    private $logger = null;
+    private $logger;
 
     /**
      * Class constructor
      *
      * @param string $protocol
      *
-     * @throws \Exception
+     * @throws Exception
      */
-    public function __construct($protocol, \Psr\Log\LoggerInterface $logger = null) {
+    public function __construct($protocol, LoggerInterface $logger = null) {
 
-        $this->logger = is_null($logger) ? new NullLogger() : $logger;
+        $this->logger = is_null($logger) ? LogManager::create('rpcserver', false)->getLogger() : $logger;
 
         try {
 
@@ -167,10 +168,10 @@ class RpcServer {
      *
      * @param string $protocol
      *
-     * @return \Comodojo\RpcServer\RpcServer
-     * @throws \Exception
+     * @return $this
+     * @throws Exception
      */
-    final public function setProtocol($protocol) {
+    public function setProtocol($protocol) {
 
         if ( empty($protocol) || !in_array($protocol, $this->supported_protocols) ) throw new Exception('Invalid or unsupported RPC protocol');
 
@@ -185,7 +186,7 @@ class RpcServer {
      *
      * @return string
      */
-    final public function getProtocol() {
+    public function getProtocol() {
 
         return $this->protocol;
 
@@ -196,7 +197,7 @@ class RpcServer {
      *
      * @return \Comodojo\RpcServer\RpcServer
      */
-    final public function setPayload($payload) {
+    public function setPayload($payload) {
 
         $this->payload = $payload;
 
@@ -209,13 +210,13 @@ class RpcServer {
      *
      * @return string
      */
-    final public function getPayload() {
+    public function getPayload() {
 
         return $this->payload;
 
     }
 
-    final public function setEncoding($encoding) {
+    public function setEncoding($encoding) {
 
         $this->encoding = $encoding;
 
@@ -223,7 +224,7 @@ class RpcServer {
 
     }
 
-    final public function getEncoding() {
+    public function getEncoding() {
 
         return $this->encoding;
 
@@ -232,11 +233,12 @@ class RpcServer {
     /**
      * Set encryption key; this will enable the NOT-STANDARD payload encryption
      *
-     * @param   string  $key Encryption key
+     * @param string $key
+     *     The encryption key
      *
-     * @return  RpcServer
+     * @return $this
      *
-     * @throws \Exception
+     * @throws Exception
      */
     final public function setEncryption($key) {
 
@@ -262,7 +264,7 @@ class RpcServer {
     /**
      * Get the capabilities manager
      *
-     * @return \Comodojo\RpcServer\Component\Capabilities
+     * @return Capabilities
      */
     public function capabilities() {
 
@@ -273,7 +275,7 @@ class RpcServer {
     /**
      * Get the methods manager
      *
-     * @return \Comodojo\RpcServer\Component\Methods
+     * @return Methods
      */
     public function methods() {
 
@@ -284,7 +286,7 @@ class RpcServer {
     /**
      * Get the errors manager
      *
-     * @return \Comodojo\RpcServer\Component\Errors
+     * @return Errors
      */
     public function errors() {
 
@@ -294,7 +296,7 @@ class RpcServer {
     /**
      * Retrieve the logger instance
      *
-     * @return \Psr\Log\LoggerInterface
+     * @return LoggerInterface
      */
     public function logger() {
 
@@ -362,7 +364,7 @@ class RpcServer {
 
             $this->request_is_encrypted = true;
 
-            $aes = new Crypt_AES();
+            $aes = new AES();
 
             $aes->setKey($this->encrypt);
 
@@ -459,13 +461,17 @@ class RpcServer {
 
         }
 
+        $this->logger->debug("Plain response: $encoded");
+
         if ( $this->request_is_encrypted /* && !empty($encoded) */ ) {
 
-            $aes = new Crypt_AES();
+            $aes = new AES();
 
             $aes->setKey($this->encrypt);
 
             $encoded = 'comodojo_encrypted_response-'.base64_encode($aes->encrypt($encoded));
+
+            $this->logger->debug("Encrypted response: $encoded");
 
         }
 
@@ -480,30 +486,30 @@ class RpcServer {
      */
     private static function setIntrospectionMethods($methods) {
 
-        $methods->add( RpcMethod::create("system.getCapabilities", "\Comodojo\RpcServer\Reserved\GetCapabilities", "execute")
+        $methods->add( RpcMethod::create("system.getCapabilities", '\Comodojo\RpcServer\Reserved\GetCapabilities::execute')
             ->setDescription("This method lists all the capabilites that the RPC server has: the (more or less standard) extensions to the RPC spec that it adheres to")
             ->setReturnType('struct')
         );
 
-        $methods->add( RpcMethod::create("system.listMethods", "\Comodojo\RpcServer\Introspection\ListMethods", "execute")
+        $methods->add( RpcMethod::create("system.listMethods", '\Comodojo\RpcServer\Introspection\ListMethods::execute')
             ->setDescription("This method lists all the methods that the RPC server knows how to dispatch")
             ->setReturnType('array')
         );
 
-        $methods->add( RpcMethod::create("system.methodHelp", "\Comodojo\RpcServer\Introspection\MethodHelp", "execute")
+        $methods->add( RpcMethod::create("system.methodHelp", '\Comodojo\RpcServer\Introspection\MethodHelp::execute')
             ->setDescription("Returns help text if defined for the method passed, otherwise returns an empty string")
             ->setReturnType('string')
             ->addParameter('string', 'method')
         );
 
-        $methods->add( RpcMethod::create("system.methodSignature", "\Comodojo\RpcServer\Introspection\MethodSignature", "execute")
+        $methods->add( RpcMethod::create("system.methodSignature", '\Comodojo\RpcServer\Introspection\MethodSignature::execute')
             ->setDescription("Returns an array of known signatures (an array of arrays) for the method name passed.".
                 "If no signatures are known, returns a none-array (test for type != array to detect missing signature)")
             ->setReturnType('array')
             ->addParameter('string', 'method')
         );
 
-        $methods->add( RpcMethod::create("system.multicall", "\Comodojo\RpcServer\Reserved\Multicall", "execute")
+        $methods->add( RpcMethod::create("system.multicall", '\Comodojo\RpcServer\Reserved\Multicall::execute')
             ->setDescription("Boxcar multiple RPC calls in one request. See http://www.xmlrpc.com/discuss/msgReader\$1208 for details")
             ->setReturnType('array')
             ->addParameter('array', 'requests')

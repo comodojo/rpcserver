@@ -118,8 +118,6 @@ class XmlProcessor {
 
         $callback = $this->registered_method->getCallback();
 
-        $method = $this->registered_method->getMethod();
-
         set_error_handler(
 
             function($severity, $message, $file, $line) {
@@ -137,7 +135,7 @@ class XmlProcessor {
 
         try {
 
-            $return = empty($method) ? call_user_func($callback, $this->parameters) : call_user_func(array($callback, $method), $this->parameters);
+            $return = call_user_func($callback, $this->parameters);
 
         } catch (RpcException $re) {
 
