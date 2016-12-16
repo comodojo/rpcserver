@@ -322,7 +322,7 @@ class RpcServer {
 
             $payload = $this->uncan($this->payload);
 
-            $this->logger->debug("Decoded payload", (array)$payload);
+            $this->logger->debug("Decoded payload", (array) $payload);
 
             if ( $this->protocol == self::XMLRPC ) $result = XmlProcessor::process($payload, $parameters_object, $this->logger);
 
@@ -486,30 +486,30 @@ class RpcServer {
      */
     private static function setIntrospectionMethods($methods) {
 
-        $methods->add( RpcMethod::create("system.getCapabilities", '\Comodojo\RpcServer\Reserved\GetCapabilities::execute')
+        $methods->add(RpcMethod::create("system.getCapabilities", '\Comodojo\RpcServer\Reserved\GetCapabilities::execute')
             ->setDescription("This method lists all the capabilites that the RPC server has: the (more or less standard) extensions to the RPC spec that it adheres to")
             ->setReturnType('struct')
         );
 
-        $methods->add( RpcMethod::create("system.listMethods", '\Comodojo\RpcServer\Introspection\ListMethods::execute')
+        $methods->add(RpcMethod::create("system.listMethods", '\Comodojo\RpcServer\Introspection\ListMethods::execute')
             ->setDescription("This method lists all the methods that the RPC server knows how to dispatch")
             ->setReturnType('array')
         );
 
-        $methods->add( RpcMethod::create("system.methodHelp", '\Comodojo\RpcServer\Introspection\MethodHelp::execute')
+        $methods->add(RpcMethod::create("system.methodHelp", '\Comodojo\RpcServer\Introspection\MethodHelp::execute')
             ->setDescription("Returns help text if defined for the method passed, otherwise returns an empty string")
             ->setReturnType('string')
             ->addParameter('string', 'method')
         );
 
-        $methods->add( RpcMethod::create("system.methodSignature", '\Comodojo\RpcServer\Introspection\MethodSignature::execute')
+        $methods->add(RpcMethod::create("system.methodSignature", '\Comodojo\RpcServer\Introspection\MethodSignature::execute')
             ->setDescription("Returns an array of known signatures (an array of arrays) for the method name passed.".
                 "If no signatures are known, returns a none-array (test for type != array to detect missing signature)")
             ->setReturnType('array')
             ->addParameter('string', 'method')
         );
 
-        $methods->add( RpcMethod::create("system.multicall", '\Comodojo\RpcServer\Reserved\Multicall::execute')
+        $methods->add(RpcMethod::create("system.multicall", '\Comodojo\RpcServer\Reserved\Multicall::execute')
             ->setDescription("Boxcar multiple RPC calls in one request. See http://www.xmlrpc.com/discuss/msgReader\$1208 for details")
             ->setReturnType('array')
             ->addParameter('array', 'requests')
@@ -533,7 +533,7 @@ class RpcServer {
             'json-rpc' => array('http://www.jsonrpc.org/specification', 2)
         );
 
-        foreach ($supported_capabilities as $capability => $values) {
+        foreach ( $supported_capabilities as $capability => $values ) {
 
             $capabilities->add($capability, $values[0], $values[1]);
 
@@ -564,7 +564,7 @@ class RpcServer {
             -31001 => "Recursive system.multicall forbidden"
         );
 
-        foreach ($std_rpc_errors as $code => $message) {
+        foreach ( $std_rpc_errors as $code => $message ) {
 
             $errors->add($code, $message);
 

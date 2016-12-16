@@ -240,7 +240,7 @@ class XmlProcessor {
 
             $index = 0;
 
-            foreach ($signature["PARAMETERS"] as $parameter => $type) {
+            foreach ( $signature["PARAMETERS"] as $parameter => $type ) {
 
                 if ( !DataValidator::validate($type, $provided_parameters[$index]) ) continue 2;
 

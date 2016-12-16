@@ -94,8 +94,7 @@ class RpcMethod {
      * Class constructor
      *
      * @param string $name
-     * @param mixed  $callback
-     * @param string $method
+     * @param callable  $callback
      *
      * @throws Exception
      */
@@ -379,8 +378,7 @@ class RpcMethod {
      * Static class constructor - create an RpcMethod object
      *
      * @param string            $name
-     * @param string|function   $callback
-     * @param string|null       $method
+     * @param string   $callback
      *
      * @return RpcMethod
      * @throws Exception

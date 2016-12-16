@@ -471,7 +471,7 @@ class JsonProcessor {
 
             $index = 0;
 
-            foreach ($requested as $parameter => $type) {
+            foreach ( $requested as $parameter => $type ) {
 
                 if ( !DataValidator::validate($type, $provided[$index]) ) return false;
 
