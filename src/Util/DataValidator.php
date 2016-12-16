@@ -30,7 +30,7 @@ class DataValidator {
      */
     public static function validate($kind, $value) {
 
-        $subfunction = "self::validate".ucfirst(strtolower(str_replace(".","",$kind)));
+        $subfunction = "self::validate".ucfirst(strtolower(str_replace(".", "", $kind)));
 
         return call_user_func($subfunction, $value);
 
@@ -82,7 +82,7 @@ class DataValidator {
 
         if ( !is_array($value) ) return false;
 
-        return ( array() === $value || !self::validateStruct($value) );
+        return (array() === $value || !self::validateStruct($value));
 
     }
 
@@ -110,7 +110,7 @@ class DataValidator {
 
             $timestring = strtotime($value);
 
-            if ($timestring === false) return false;
+            if ( $timestring === false ) return false;
 
             return $timestring == $time;
 
