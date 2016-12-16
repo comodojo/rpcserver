@@ -2,6 +2,8 @@
 
 [![Build Status](https://api.travis-ci.org/comodojo/rpcserver.png)](http://travis-ci.org/comodojo/rpcserver) [![Latest Stable Version](https://poser.pugx.org/comodojo/rpcserver/v/stable)](https://packagist.org/packages/comodojo/rpcserver) [![Total Downloads](https://poser.pugx.org/comodojo/rpcserver/downloads)](https://packagist.org/packages/comodojo/rpcserver) [![Latest Unstable Version](https://poser.pugx.org/comodojo/rpcserver/v/unstable)](https://packagist.org/packages/comodojo/rpcserver) [![License](https://poser.pugx.org/comodojo/rpcserver/license)](https://packagist.org/packages/comodojo/rpcserver) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/comodojo/rpcserver/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/comodojo/rpcserver/?branch=master) [![Code Coverage](https://scrutinizer-ci.com/g/comodojo/rpcserver/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/comodojo/rpcserver/?branch=master)
 
+*** This version is under active development, features can change in any way at any point in time without any notice. ***
+
 This library provides a framework and transport independent implementation of XML and JSON(2.0) RPC server.
 
 It is designed to work in combination with a REST framework that could handle the transport side (such as [Comodojo dispatcher](https://github.com/comodojo/dispatcher.framework)).
@@ -43,10 +45,10 @@ try {
 
 	// create a RpcServer instance (i.e. JSON)
     $server = new \Comodojo\RpcServer\RpcServer(\Comodojo\RpcServer\RpcServer::JSONRPC);
-    
+
     // create a method (using lambda functions)
     $method = \Comodojo\RpcServer\RpcMethod::create("example.sum", function($params) {
-    
+
         $a = $params->get('a');
 
         $b = $params->get('b');
@@ -57,18 +59,18 @@ try {
     ->setReturnType('int')
     ->addParameter('int','a')
     ->addParameter('int','b');
-    
+
     // register method into server
     $is_method_in = $server->methods()->add($method);
-    
+
     // set the payload
     $server->setPayload($request);
-    
+
     // serve the request
     $result = $server->serve();
 
 } catch (\Exception $e) {
-	
+
 	/* something did not work :( */
 
 }
@@ -81,7 +83,7 @@ echo $result;
 
 The `\Comodojo\RpcServer\RpcMethod` class should be used to create RPC methods to inject into server.
 
-It requires basically a method name and a callable, provided as labmda function, named function or couple class::method.
+It requires basically a method name and a callable, provided as lambda function, named function or couple class::method.
 
 Parameters can be added using `addParameter()` method. Multiple signatures could be specified using `addSignature()`.
 
@@ -90,7 +92,7 @@ For example, to create a **my.method** RPC method mapped to `\My\RpcClass::mymet
 ```php
 
 // create a method using class::method pattern
-$method = \Comodojo\RpcServer\RpcMethod::create("my.method", "\My\RpcClass", "mymethod")
+$method = \Comodojo\RpcServer\RpcMethod::create('my.method', '\My\RpcClass::mymethod')
     // provide a description for the method
     ->setDescription("My method")
     // set the return type (default: undefined)
@@ -113,22 +115,58 @@ The `\My\RpcClass::mymethod()` should expect a `\Comodojo\RpcServer\Request\Para
 
 class RpcClass {
 
-    public function mymethod($params) {
-    
+    public static function mymethod(\Comodojo\RpcServer\Request\Parameters $params) {
+
+        // retrieve 'a' param
         $a = $params->get('a');
-        
+
+        // retrieve 'b' param
         $b = $params->get('b');
-        
+
+        // get current PSR-3 logger
         $logger = $params->logger();
-        
+
+        // get current protocol
         $current_rpc_protocol = $params->protocol();
-        
-        $return = array($a, $b);
-        
-        $logger->info("Current protocol: ".$current_rpc_protocol.", returned value in context", $return);
-        
-        return $return;
-    
+
+        // log something...
+        $logger->info("mymethod called, current protocol: ".$current_rpc_protocol.", returned value in context", [$a, $b]);
+
+        return [$a, $b];
+
+    }
+
+}
+
+```
+
+In case the callback method needs extra arguments in input, they should be specified as additional arguments in method declaration; framework will transfer them invoking callback.
+
+As an example, a method declaration like:
+
+```php
+
+// create a method thant transfer two additional arguments
+$method = \Comodojo\RpcServer\RpcMethod::create('my.method', '\My\RpcClass::mymethod', \My\Extra\Attribute $attribute, $another_attribute)
+    ->setDescription("My method")
+    ->setReturnType('boolean');
+
+```
+
+Will invoke a callback like:
+
+```php
+
+class RpcClass {
+
+    public static function mymethod(
+        \Comodojo\RpcServer\Request\Parameters $params,
+        \My\Extra\Attribute $attribute,
+        $another_attribute
+    ) {
+
+        // ... method internals
+
     }
 
 }

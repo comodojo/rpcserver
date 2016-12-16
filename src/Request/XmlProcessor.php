@@ -117,6 +117,8 @@ class XmlProcessor {
     public function run() {
 
         $callback = $this->registered_method->getCallback();
+        $attributes = $this->registered_method->getArguments();
+        array_unshift($attributes, $this->parameters);
 
         set_error_handler(
 
@@ -135,7 +137,8 @@ class XmlProcessor {
 
         try {
 
-            $return = call_user_func($callback, $this->parameters);
+            // $return = call_user_func($callback, $this->parameters);
+            $return = call_user_func_array($callback, $attributes);
 
         } catch (RpcException $re) {
 

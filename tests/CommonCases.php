@@ -276,4 +276,37 @@ abstract class CommonCases extends \PHPUnit_Framework_TestCase {
 
     }
 
+    public function testAdditionalArgumentsMethod() {
+
+        $one = 10;
+
+        $two = 20;
+
+        $lambda = function($params, $b, $c) {
+
+            $a = $params->get('a');
+
+            return $a+$b+$c;
+
+        };
+
+        $method = \Comodojo\RpcServer\RpcMethod::create("test.additionalarguments", $lambda, $one, $two)
+            ->setDescription("Test extra attributes forwarded to callback")
+            ->setReturnType('string')
+            ->addParameter('int','a');
+
+        $result = $this->server->methods()->add($method);
+
+        $this->assertTrue($result);
+
+        $request = $this->encodeRequest('test.additionalarguments', array(12));
+
+        $result = $this->server->setPayload($request)->serve();
+
+        $decoded = $this->decodeResponse($result);
+
+        $this->assertEquals(42, $decoded);
+
+    }
+
 }

@@ -261,6 +261,10 @@ class JsonProcessor {
 
             $callback = $registered_method->getCallback();
 
+            $attributes = $registered_method->getArguments();
+
+            array_unshift($attributes, $this->parameters);
+
         } catch (RpcException $re) {
 
             throw $re;
@@ -284,7 +288,8 @@ class JsonProcessor {
 
         try {
 
-            $return = call_user_func($callback, $this->parameters);
+            // $return = call_user_func($callback, $this->parameters);
+            $return = call_user_func_array($callback, $attributes);
 
         } catch (RpcException $re) {
 

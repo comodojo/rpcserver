@@ -84,6 +84,13 @@ class RpcMethod {
     private $current_signature = null;
 
     /**
+     * Placeholder for additional arguments
+     *
+     * @var array
+     */
+    private $arguments = array();
+
+    /**
      * Class constructor
      *
      * @param string $name
@@ -92,7 +99,7 @@ class RpcMethod {
      *
      * @throws Exception
      */
-    public function __construct($name, callable $callback) {
+    public function __construct($name, callable $callback, ...$arguments) {
 
         if ( !is_string($name) ) throw new Exception("RPC method exception: invalid or undefined name");
 
@@ -101,6 +108,8 @@ class RpcMethod {
         $this->name = $name;
 
         $this->callback = $callback;
+
+        $this->arguments = $arguments;
 
         $this->addSignature();
 
@@ -155,6 +164,17 @@ class RpcMethod {
     public function getDescription() {
 
         return $this->description;
+
+    }
+
+    /**
+     * Get additional arguments to forward to callback
+     *
+     * @return array
+     */
+    public function getArguments() {
+
+        return $this->arguments;
 
     }
 
@@ -365,11 +385,11 @@ class RpcMethod {
      * @return RpcMethod
      * @throws Exception
      */
-    public static function create($name, $callback, $method = null) {
+    public static function create($name, $callback, ...$attributes) {
 
         try {
 
-            $method = new RpcMethod($name, $callback, $method);
+            $method = new RpcMethod($name, $callback, ...$attributes);
 
         } catch (Exception $e) {
 
