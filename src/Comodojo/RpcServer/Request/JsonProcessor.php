@@ -1,7 +1,7 @@
 <?php namespace Comodojo\RpcServer\Request;
 
 use \Comodojo\RpcServer\Request\Parameters;
-use \Comodojo\RpcServer\Util\DataValidator;
+use \Comodojo\Foundation\Validation\DataValidation as Validator;
 use \Comodojo\Exception\RpcException;
 use \Exception;
 
@@ -456,7 +456,7 @@ class JsonProcessor {
 
                 if (
                     !isset($requested[$parameter]) ||
-                    !DataValidator::validate($requested[$parameter], $value)
+                    !Validator::validate($value, $requested[$parameter])
                 ) return false;
 
             }
@@ -473,7 +473,7 @@ class JsonProcessor {
 
             foreach ( $requested as $parameter => $type ) {
 
-                if ( !DataValidator::validate($type, $provided[$index]) ) return false;
+                if ( !Validator::validate($provided[$index], $type) ) return false;
 
                 $index += 1;
 

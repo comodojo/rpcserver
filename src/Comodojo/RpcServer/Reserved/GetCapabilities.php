@@ -1,9 +1,9 @@
-<?php namespace Comodojo\RpcServer\Introspection;
+<?php namespace Comodojo\RpcServer\Reserved;
 
-use \Comodojo\Exception\RpcException;
+use \Comodojo\RpcServer\Request\Parameters;
 
 /**
- * The system.methodHelp method implementation
+ * The system.getCapabilities method implementation
  *
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -20,24 +20,18 @@ use \Comodojo\Exception\RpcException;
  * THE SOFTWARE.
  */
 
-class MethodHelp {
+class GetCapabilities {
 
     /**
      * Execute call
      *
-     * @param \Comodojo\RpcServer\Request\Parameters $params
+     * @param Parameters $params
      *
-     * @return string
+     * @return array
      */
-    final public static function execute($params) {
+    final public static function execute(Parameters $params) {
 
-        $asked_method = $params->get('method');
-
-        $method = $params->methods()->get($asked_method);
-
-        if ( is_null($method) ) throw new RpcException("Method not found", -32601);
-
-        return $method->getDescription();
+        return $params->capabilities()->get();
 
     }
 

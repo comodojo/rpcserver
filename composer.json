@@ -24,7 +24,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Comodojo\\RpcServer\\": "src"
+            "Comodojo\\RpcServer\\": "src/Comodojo/RpcServer"
         }
     },
     "minimum-stability": "dev",

@@ -31,11 +31,11 @@ class Multicall {
     /**
      * Execute call
      *
-     * @param \Comodojo\RpcServer\Request\Parameters $params
+     * @param Parameters $params
      *
      * @return array
      */
-    final public static function execute($params) {
+    final public static function execute(Parameters $params) {
 
         if ( $params->protocol() != RpcServer::XMLRPC ) {
 

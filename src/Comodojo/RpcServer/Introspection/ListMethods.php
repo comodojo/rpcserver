@@ -1,7 +1,9 @@
-<?php namespace Comodojo\RpcServer\Reserved;
+<?php namespace Comodojo\RpcServer\Introspection;
+
+use \Comodojo\RpcServer\Request\Parameters;
 
 /**
- * The system.getCapabilities method implementation
+ * The system.listMethods method implementation
  *
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -18,18 +20,20 @@
  * THE SOFTWARE.
  */
 
-class GetCapabilities {
+class ListMethods {
 
     /**
      * Execute call
      *
-     * @param \Comodojo\RpcServer\Request\Parameters $params
+     * @param Parameters $params
      *
      * @return array
      */
-    final public static function execute($params) {
+    final public static function execute(Parameters $params) {
 
-        return $params->capabilities()->get();
+        $methods = $params->methods()->get();
+
+        return array_keys($methods);
 
     }
 

@@ -1,7 +1,7 @@
 <?php namespace Comodojo\RpcServer\Request;
 
 use \Comodojo\RpcServer\Request\Parameters;
-use \Comodojo\RpcServer\Util\DataValidator;
+use \Comodojo\Foundation\Validation\DataValidation as Validator;
 use \Comodojo\Exception\RpcException;
 use \Exception;
 
@@ -242,7 +242,7 @@ class XmlProcessor {
 
             foreach ( $signature["PARAMETERS"] as $parameter => $type ) {
 
-                if ( !DataValidator::validate($type, $provided_parameters[$index]) ) continue 2;
+                if ( !Validator::validate($provided_parameters[$index], $type) ) continue 2;
 
                 $index += 1;
 

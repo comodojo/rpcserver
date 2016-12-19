@@ -1,7 +1,10 @@
 <?php namespace Comodojo\RpcServer\Introspection;
 
+use \Comodojo\RpcServer\Request\Parameters;
+use \Comodojo\Exception\RpcException;
+
 /**
- * The system.listMethods method implementation
+ * The system.methodSignature method implementation
  *
  * @package     Comodojo Spare Parts
  * @author      Marco Giovinazzi <marco.giovinazzi@comodojo.org>
@@ -18,20 +21,26 @@
  * THE SOFTWARE.
  */
 
-class ListMethods {
+class MethodSignature {
 
     /**
      * Execute call
      *
-     * @param \Comodojo\RpcServer\Request\Parameters $params
+     * @param Parameters $params
      *
      * @return array
      */
-    final public static function execute($params) {
+    final public static function execute(Parameters $params) {
 
-        $methods = $params->methods()->get();
+        $asked_method = $params->get('method');
 
-        return array_keys($methods);
+        $method = $params->methods()->get($asked_method);
+
+        if ( is_null($method) ) throw new RpcException("Method not found", -32601);
+
+        $signatures = $method->getSignatures();
+
+        return sizeof($signatures) == 1 ? $signatures[0] : $signatures;
 
     }
 
