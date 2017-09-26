@@ -69,7 +69,7 @@ class Capabilities {
                 'specVersion' => $specVersion
             );
 
-            $this->logger->info("Added capability ".$capability);
+            $this->logger->debug("Added capability ".$capability);
 
             return true;
 
@@ -90,7 +90,7 @@ class Capabilities {
 
             unset($this->rpc_capabilities[$capability]);
 
-            $this->logger->info("Deleted capability ".$capability);
+            $this->logger->debug("Deleted capability ".$capability);
 
             return true;
 

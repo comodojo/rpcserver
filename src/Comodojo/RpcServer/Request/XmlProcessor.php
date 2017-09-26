@@ -71,7 +71,7 @@ class XmlProcessor {
 
         $this->logger = $logger;
 
-        $this->logger->notice("Starting XML processor");
+        $this->logger->debug("Starting XML processor");
 
         try {
 

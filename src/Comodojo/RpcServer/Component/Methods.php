@@ -8,7 +8,7 @@
  * @license     MIT
  *
  * LICENSE:
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -66,7 +66,7 @@ class Methods {
 
             $this->rpc_methods[$name] = $method;
 
-            $this->logger->info("Added method ".$name);
+            $this->logger->debug("Added method ".$name);
 
             return true;
 
@@ -87,7 +87,7 @@ class Methods {
 
             unset($this->rpc_methods[$name]);
 
-            $this->logger->info("Deleted method ".$name);
+            $this->logger->debug("Deleted method ".$name);
 
             return true;
 

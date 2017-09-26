@@ -65,7 +65,7 @@ class Errors {
 
             $this->rpc_errors[$code] = $message;
 
-            $this->logger->info("Added error ".$code);
+            $this->logger->debug("Added error ".$code);
 
             return true;
 
@@ -86,7 +86,7 @@ class Errors {
 
             unset($this->rpc_errors[$code]);
 
-            $this->logger->info("Deleted error ".$code);
+            $this->logger->debug("Deleted error ".$code);
 
             return true;
 

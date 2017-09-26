@@ -159,7 +159,7 @@ class RpcServer {
 
         }
 
-        $this->logger->notice("RpcServer init complete, protocol ".$protocol);
+        $this->logger->debug("RpcServer init complete, protocol ".$protocol);
 
     }
 

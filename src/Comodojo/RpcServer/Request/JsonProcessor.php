@@ -71,7 +71,7 @@ class JsonProcessor {
 
         $this->logger = $logger;
 
-        $this->logger->notice("Starting JSON processor");
+        $this->logger->debug("Starting JSON processor");
 
         $this->parameters = $parameters;
 
@@ -101,7 +101,7 @@ class JsonProcessor {
 
                 try {
 
-                    $this->logger->notice("Serving request ".$request['METHOD']."(".$request['ID'].")");
+                    $this->logger->debug("Serving request ".$request['METHOD']."(".$request['ID'].")");
 
                     $response = $this->runSingleRequest($request['METHOD'], $request['PARAMETERS']);
 
