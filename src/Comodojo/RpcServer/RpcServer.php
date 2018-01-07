@@ -435,6 +435,8 @@ class RpcServer {
 
             } catch (XmlrpcException $xe) {
 
+                $this->logger->error($xe->getMessage());
+
                 $encoded = $encoder->encodeError(-32500, "Application error");
 
             }

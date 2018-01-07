@@ -32,6 +32,7 @@ class RpcMethod {
     public static $rpcvalues = array(
         "i4" => "int",
         "int" => "int",
+        "integer" => "int",
         "double" => "double",
         "float" => "double",
         "boolean" => "boolean",
