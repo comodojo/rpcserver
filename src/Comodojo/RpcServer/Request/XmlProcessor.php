@@ -1,7 +1,9 @@
 <?php namespace Comodojo\RpcServer\Request;
 
 use \Comodojo\RpcServer\Request\Parameters;
+use \Comodojo\RpcServer\RpcMethod;
 use \Comodojo\Foundation\Validation\DataValidation as Validator;
+use \Psr\Log\LoggerInterface;
 use \Comodojo\Exception\RpcException;
 use \Exception;
 
@@ -35,39 +37,39 @@ class XmlProcessor {
     /**
      * A parameters object
      *
-     * @var \Comodojo\RpcServer\Request\Parameters
+     * @var Parameters
      */
-    private $parameters = null;
+    private $parameters;
 
     /**
      * Selected method
      *
-     * @var \Comodojo\RpcServer\RpcMethod
+     * @var RpcMethod
      */
-    private $registered_method = null;
+    private $registered_method;
 
     /**
      * Selected signature
      *
      * @var int
      */
-    private $selected_signature = null;
+    private $selected_signature;
 
     /**
      * Current logger
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    private $logger = null;
+    private $logger;
 
     /**
      * Class constructor
      *
-     * @param array                                  $payload
-     * @param \Comodojo\RpcServer\Request\Parameters $parameters
-     * @param \Psr\Log\LoggerInterface               $logger
+     * @param array $payload
+     * @param Parameters $parameters
+     * @param LoggerInterface $logger
      */
-    public function __construct($payload, Parameters $parameters, \Psr\Log\LoggerInterface $logger) {
+    public function __construct(array $payload, Parameters $parameters, LoggerInterface $logger) {
 
         $this->logger = $logger;
 
@@ -168,15 +170,15 @@ class XmlProcessor {
     /**
      * Static constructor - start processor
      *
-     * @param array                                  $payload
-     * @param \Comodojo\RpcServer\Request\Parameters $parameters
-     * @param \Psr\Log\LoggerInterface               $logger
+     * @param array $payload
+     * @param Parameters $parameters
+     * @param LoggerInterface $logger
      *
      * @return mixed
-     * @throws \Comodojo\Exception\RpcException
+     * @throws RpcException
      * @throws Exception
      */
-    public static function process($payload, Parameters $parameters, \Psr\Log\LoggerInterface $logger) {
+    public static function process(array $payload, Parameters $parameters, LoggerInterface $logger) {
 
         try {
 
@@ -201,8 +203,8 @@ class XmlProcessor {
     /**
      * Check if a request is sustainable (i.e. if method is registered)
      *
-     * @return \Comodojo\RpcServer\RpcMethod
-     * @throws \Comodojo\Exception\RpcException
+     * @return RpcMethod
+     * @throws RpcException
      */
     private function checkRequestSustainability() {
 
@@ -220,9 +222,9 @@ class XmlProcessor {
      * @param array  $provided_parameters
      *
      * @return int
-     * @throws \Comodojo\Exception\RpcException
+     * @throws RpcException
      */
-    private function checkRequestConsistence($provided_parameters) {
+    private function checkRequestConsistence(array $provided_parameters) {
 
         $signatures = $this->registered_method->getSignatures(false);
 
@@ -259,15 +261,15 @@ class XmlProcessor {
     /**
      * Create an associative array of $name => $parameter from current signature
      *
-     * @param array                         $provided
-     * @param \Comodojo\RpcServer\RpcMethod $method
-     * @param integer                       $selected_signature
+     * @param array $provided
+     * @param RpcMethod $method
+     * @param integer $selected_signature
      *
      * @return array
      */
-    private static function matchParameters($provided, $method, $selected_signature) {
+    private static function matchParameters(array $provided, RpcMethod $method, $selected_signature) {
 
-        $parameters = array();
+        $parameters = [];
 
         $requested_parameters = $method->selectSignature($selected_signature)->getParameters();
 
@@ -290,7 +292,7 @@ class XmlProcessor {
      *
      * @return array
      */
-    private static function preprocessRequest($payload) {
+    private static function preprocessRequest(array $payload) {
 
         return (is_array($payload[0])) ? array('system.multicall', array($payload)) : array($payload[0], $payload[1]);
 

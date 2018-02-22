@@ -1,8 +1,10 @@
 <?php namespace Comodojo\RpcServer\Request;
 
 use \Comodojo\RpcServer\Request\Parameters;
+use \Comodojo\RpcServer\RpcMethod;
 use \Comodojo\Foundation\Validation\DataValidation as Validator;
 use \Comodojo\Exception\RpcException;
+use \Psr\Log\LoggerInterface;
 use \Exception;
 
 /**
@@ -28,23 +30,23 @@ class JsonProcessor {
     /**
      * A parameters object
      *
-     * @var \Comodojo\RpcServer\Request\Parameters
+     * @var Parameters
      */
-    private $parameters = null;
+    private $parameters;
 
     /**
      * Array of requests
      *
      * @var array
      */
-    private $requests = array();
+    private $requests = [];
 
     /**
      * Array of results
      *
      * @var array
      */
-    private $results = array();
+    private $results = [];
 
     /**
      * Internal flag to identify a batch request
@@ -56,18 +58,18 @@ class JsonProcessor {
     /**
      * Current logger
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
     private $logger = null;
 
     /**
      * Class constructor
      *
-     * @param array|object                           $payload
-     * @param \Comodojo\RpcServer\Request\Parameters $parameters
-     * @param \Psr\Log\LoggerInterface               $logger
+     * @param array|object $payload
+     * @param Parameters $parameters
+     * @param LoggerInterface $logger
      */
-    public function __construct($payload, Parameters $parameters, \Psr\Log\LoggerInterface $logger) {
+    public function __construct($payload, Parameters $parameters, LoggerInterface $logger) {
 
         $this->logger = $logger;
 
@@ -147,14 +149,14 @@ class JsonProcessor {
     /**
      * Static constructor - start processor
      *
-     * @param array|object                           $payload
-     * @param \Comodojo\RpcServer\Request\Parameters $parameters
-     * @param \Psr\Log\LoggerInterface               $logger
+     * @param array|object $payload
+     * @param Parameters $parameters
+     * @param LoggerInterface $logger
      *
      * @return mixed
      * @throws Exception
      */
-    public static function process($payload, Parameters $parameters, \Psr\Log\LoggerInterface $logger) {
+    public static function process($payload, Parameters $parameters, LoggerInterface $logger) {
 
         try {
 
@@ -181,7 +183,7 @@ class JsonProcessor {
      */
     private static function preprocessJsonPayload($payload) {
 
-        $requests = array();
+        $requests = [];
 
         $is_batch = false;
 
@@ -232,7 +234,7 @@ class JsonProcessor {
 
         return array(
             'METHOD' => $request->method,
-            'PARAMETERS' => property_exists($request, 'params') ? $request->params : array(),
+            'PARAMETERS' => property_exists($request, 'params') ? $request->params : [],
             'ID' => property_exists($request, 'id') ? $request->id : null
         );
 
@@ -375,15 +377,15 @@ class JsonProcessor {
     /**
      * Create an associative array of $name => $parameter from current signature
      *
-     * @param array                         $provided
-     * @param \Comodojo\RpcServer\RpcMethod $method
-     * @param integer                       $selected_signature
+     * @param array $provided
+     * @param RpcMethod $method
+     * @param integer $selected_signature
      *
      * @return array
      */
-    private static function matchParameters($provided, $method, $selected_signature) {
+    private static function matchParameters(array $provided, RpcMethod $method, $selected_signature) {
 
-        $parameters = array();
+        $parameters = [];
 
         $requested_parameters = $method->selectSignature($selected_signature)->getParameters();
 
@@ -404,8 +406,8 @@ class JsonProcessor {
      *
      * @param string $request_method
      *
-     * @return \Comodojo\RpcServer\RpcMethod
-     * @throws \Comodojo\Exception\RpcException
+     * @return RpcMethod
+     * @throws RpcException
      */
     private function checkRequestSustainability($request_method) {
 
@@ -420,13 +422,13 @@ class JsonProcessor {
     /**
      * Check if a request is consistent (i.e. if it matches one of method's signatures)
      *
-     * @param \Comodojo\RpcServer\RpcMethod $registered_method
-     * @param array                         $parameters
+     * @param RpcMethod $registered_method
+     * @param array $parameters
      *
      * @return int
-     * @throws \Comodojo\Exception\RpcException
+     * @throws RpcException
      */
-    private function checkRequestConsistence($registered_method, $parameters) {
+    private function checkRequestConsistence(RpcMethod $registered_method, array $parameters) {
 
         $signatures = $registered_method->getSignatures(false);
 
@@ -443,8 +445,8 @@ class JsonProcessor {
     /**
      * Check if call match a signature
      *
-     * @param array  $provided
-     * @param array  $requested
+     * @param array|object $provided
+     * @param array|object $requested
      *
      * @return bool
      */

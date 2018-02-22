@@ -34,6 +34,7 @@ class Multicall {
      * @param Parameters $params
      *
      * @return array
+     * @throws RpcException
      */
     final public static function execute(Parameters $params) {
 
@@ -45,7 +46,7 @@ class Multicall {
 
         $boxcarred_requests = $params->get('requests');
 
-        $results = array();
+        $results = [];
 
         foreach ( $boxcarred_requests as $position => $request ) {
 
@@ -68,12 +69,12 @@ class Multicall {
     /**
      * Perform a single call
      *
-     * @param array                                  $request
-     * @param \Comodojo\RpcServer\Request\Parameters $parameters_object
+     * @param array $request
+     * @param Parameters $parameters_object
      *
      * @return mixed
      */
-    private static function singleCall($request, $parameters_object) {
+    private static function singleCall(array $request, Parameters $parameters_object) {
 
         if ( !isset($request[0]) || !isset($request[1]) ) {
 
@@ -91,7 +92,7 @@ class Multicall {
 
         try {
 
-            $result = XmlProcessor::process($payload, $parameters_object, $parameters_object->logger());
+            return XmlProcessor::process($payload, $parameters_object, $parameters_object->logger());
 
         } catch (RpcException $re) {
 
@@ -102,8 +103,6 @@ class Multicall {
             return self::packError(-32500, $re->getMessage());
 
         }
-
-        return $result;
 
     }
 

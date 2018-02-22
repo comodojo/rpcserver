@@ -29,6 +29,7 @@ class MethodSignature {
      * @param Parameters $params
      *
      * @return array
+     * @throws RpcException
      */
     final public static function execute(Parameters $params) {
 

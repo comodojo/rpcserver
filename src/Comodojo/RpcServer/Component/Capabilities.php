@@ -1,5 +1,7 @@
 <?php namespace Comodojo\RpcServer\Component;
 
+use \Psr\Log\LoggerInterface;
+
 /**
  * RPC capabilities manager
  *
@@ -25,21 +27,21 @@ class Capabilities {
      *
      * @var array
      */
-    private $rpc_capabilities = array();
+    private $rpc_capabilities = [];
 
     /**
      * Current logger
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    private $logger = null;
+    private $logger;
 
     /**
      * Class constructor
      *
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param LoggerInterface $logger
      */
-    public function __construct(\Psr\Log\LoggerInterface $logger) {
+    public function __construct(LoggerInterface $logger) {
 
         $this->logger = $logger;
 
@@ -58,7 +60,7 @@ class Capabilities {
 
         if ( array_key_exists($capability, $this->rpc_capabilities) ) {
 
-            $this->logger->warning("Cannot add capability ".$capability.": duplicate entry");
+            $this->logger->warning("Cannot add capability $capability: duplicate entry");
 
             return false;
 
@@ -69,7 +71,7 @@ class Capabilities {
                 'specVersion' => $specVersion
             );
 
-            $this->logger->debug("Added capability ".$capability);
+            $this->logger->debug("Added capability $capability");
 
             return true;
 
@@ -90,13 +92,13 @@ class Capabilities {
 
             unset($this->rpc_capabilities[$capability]);
 
-            $this->logger->debug("Deleted capability ".$capability);
+            $this->logger->debug("Deleted capability $capability");
 
             return true;
 
         } else {
 
-            $this->logger->warning("Cannot delete capability ".$capability.": entry not found");
+            $this->logger->warning("Cannot delete capability $capability: entry not found");
 
             return false;
 

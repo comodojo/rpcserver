@@ -40,53 +40,59 @@ class Parameters {
      *
      * @var array
      */
-    private $parameters = array();
+    private $parameters = [];
 
     /**
      * Supported capabilities
      *
-     * @var \Comodojo\RpcServer\Component\Capabilities
+     * @var Capabilities
      */
-    private $capabilities = null;
+    private $capabilities;
 
     /**
      * Implemented methods
      *
-     * @var \Comodojo\RpcServer\Component\Methods
+     * @var Methods
      */
-    private $methods = null;
+    private $methods;
 
     /**
      * Predefined errors
      *
-     * @var \Comodojo\RpcServer\Component\Errors
+     * @var Errors
      */
-    private $errors = null;
+    private $errors;
 
     /**
      * Current RPC protocol (json|rpc)
      *
      * @var string
      */
-    private $protocol = null;
+    private $protocol;
 
     /**
      * Current logger
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    private $logger = null;
+    private $logger;
 
     /**
      * Class constructor
      *
-     * @param \Comodojo\RpcServer\Component\Capabilities  $capabilities
-     * @param \Comodojo\RpcServer\Component\Methods       $methods
-     * @param \Comodojo\RpcServer\Component\Errors        $errors
-     * @param \Psr\Log\LoggerInterface                    $logger
-     * @param string                                      $protocol
+     * @param Capabilities $capabilities
+     * @param Methods $methods
+     * @param Errors $errors
+     * @param LoggerInterface $logger
+     * @param string $protocol
      */
-    public function __construct(Capabilities $capabilities, Methods $methods, Errors $errors, LoggerInterface $logger, $protocol) {
+    public function __construct(
+        Capabilities $capabilities,
+        Methods $methods,
+        Errors $errors,
+        LoggerInterface $logger,
+        $protocol
+    ) {
 
         $this->capabilities = $capabilities;
 
@@ -105,9 +111,9 @@ class Parameters {
      *
      * @param array $parameters
      *
-     * @return Comodojo\RpcServer\Request\Parameters
+     * @return Parameters
      */
-    public function setParameters($parameters) {
+    final public function setParameters(array $parameters = []) {
 
         $this->parameters = $parameters;
 
@@ -118,9 +124,24 @@ class Parameters {
     /**
      * Get capabilities object
      *
-     * @return \Comodojo\RpcServer\Component\Capabilities
+     * @deprecated
+     * @see Parameters::getCapabilities()
+     * @return Capabilities
      */
-    final public function capabilities() {
+    public function capabilities() {
+
+        return $this->getCapabilities();
+
+    }
+
+    /**
+     * Get capabilities object
+     *
+     * @deprecated
+     * @see Parameters::getCapabilities()
+     * @return Capabilities
+     */
+    public function getCapabilities() {
 
         return $this->capabilities;
 
@@ -129,9 +150,22 @@ class Parameters {
     /**
      * Get methods object
      *
-     * @return \Comodojo\RpcServer\Component\Methods
+     * @deprecated
+     * @see Parameters::getMethods()
+     * @return Methods
      */
-    final public function methods() {
+    public function methods() {
+
+        return $this->getMethods();
+
+    }
+
+    /**
+     * Get methods object
+     *
+     * @return Methods
+     */
+    public function getMethods() {
 
         return $this->methods;
 
@@ -140,9 +174,22 @@ class Parameters {
     /**
      * Get errors object
      *
-     * @return \Comodojo\RpcServer\Component\Errors
+     * @deprecated
+     * @see Parameters::getErrors()
+     * @return Errors
      */
-    final public function errors() {
+    public function errors() {
+
+        return $this->getErrors();
+
+    }
+
+    /**
+     * Get errors object
+     *
+     * @return Errors
+     */
+    public function getErrors() {
 
         return $this->errors;
 
@@ -151,9 +198,22 @@ class Parameters {
     /**
      * Get current RPC protocol
      *
+     * @deprecated
+     * @see Parameters::getProtocol()
      * @return string
      */
-    final public function protocol() {
+    public function protocol() {
+
+        return $this->getProtocol();
+
+    }
+
+    /**
+     * Get current RPC protocol
+     *
+     * @return string
+     */
+    public function getProtocol() {
 
         return $this->protocol;
 
@@ -162,9 +222,22 @@ class Parameters {
     /**
      * Get current logger instance
      *
-     * @return \Psr\Log\LoggerInterface
+     * @deprecated
+     * @see Parameters::getLogger()
+     * @return LoggerInterface
      */
-    final public function logger() {
+    public function logger() {
+
+        return $this->getLogger();
+
+    }
+
+    /**
+     * Get current logger instance
+     *
+     * @return LoggerInterface
+     */
+    public function getLogger() {
 
         return $this->logger;
 

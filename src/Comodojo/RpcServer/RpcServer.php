@@ -13,6 +13,7 @@ use \phpseclib\Crypt\AES;
 use \Psr\Log\LoggerInterface;
 use \Comodojo\Exception\RpcException;
 use \Comodojo\Exception\XmlrpcException;
+use \InvalidArgumentException;
 use \Exception;
 
 
@@ -104,7 +105,7 @@ class RpcServer {
      *
      * @var array
      */
-    private $supported_protocols = array('xml', 'json');
+    private $supported_protocols = ['xml', 'json'];
 
     /**
      * Internal marker (encryption)
@@ -126,6 +127,7 @@ class RpcServer {
      * @param string $protocol
      *
      * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function __construct($protocol, LoggerInterface $logger = null) {
 
@@ -159,7 +161,7 @@ class RpcServer {
 
         }
 
-        $this->logger->debug("RpcServer init complete, protocol ".$protocol);
+        $this->logger->debug("RpcServer init complete, protocol $protocol");
 
     }
 
@@ -168,12 +170,12 @@ class RpcServer {
      *
      * @param string $protocol
      *
-     * @return $this
-     * @throws Exception
+     * @return self
+     * @throws InvalidArgumentException
      */
     public function setProtocol($protocol) {
 
-        if ( empty($protocol) || !in_array($protocol, $this->supported_protocols) ) throw new Exception('Invalid or unsupported RPC protocol');
+        if ( empty($protocol) || !in_array($protocol, $this->supported_protocols) ) throw new InvalidArgumentException('Invalid or unsupported RPC protocol');
 
         $this->protocol = $protocol;
 
@@ -195,7 +197,7 @@ class RpcServer {
     /**
      * Set request payload, raw format
      *
-     * @return \Comodojo\RpcServer\RpcServer
+     * @return self
      */
     public function setPayload($payload) {
 
@@ -233,16 +235,14 @@ class RpcServer {
     /**
      * Set encryption key; this will enable the NOT-STANDARD payload encryption
      *
-     * @param string $key
-     *     The encryption key
+     * @param string $key The encryption key
      *
-     * @return $this
-     *
-     * @throws Exception
+     * @return self
+     * @throws InvalidArgumentException
      */
-    final public function setEncryption($key) {
+    public function setEncryption($key) {
 
-        if ( empty($key) ) throw new Exception("Shared key cannot be empty");
+        if ( empty($key) ) throw new InvalidArgumentException("Shared key cannot be empty");
 
         $this->encrypt = $key;
 
@@ -255,52 +255,83 @@ class RpcServer {
      *
      * @return string
      */
-    final public function getEncryption() {
+    public function getEncryption() {
 
         return $this->encrypt;
 
     }
 
     /**
-     * Get the capabilities manager
+     * Get capabilities object
      *
+     * @deprecated
+     * @see Parameters::getCapabilities()
      * @return Capabilities
      */
     public function capabilities() {
+
+        return $this->getCapabilities();
+
+    }
+
+    /**
+     * Get capabilities object
+     *
+     * @deprecated
+     * @see Parameters::getCapabilities()
+     * @return Capabilities
+     */
+    public function getCapabilities() {
 
         return $this->capabilities;
 
     }
 
     /**
-     * Get the methods manager
+     * Get methods object
      *
+     * @deprecated
+     * @see Parameters::getMethods()
      * @return Methods
      */
     public function methods() {
+
+        return $this->getMethods();
+
+    }
+
+    /**
+     * Get methods object
+     *
+     * @return Methods
+     */
+    public function getMethods() {
 
         return $this->methods;
 
     }
 
     /**
-     * Get the errors manager
+     * Get errors object
      *
+     * @deprecated
+     * @see Parameters::getErrors()
      * @return Errors
      */
     public function errors() {
 
-        return $this->errors;
+        return $this->getErrors();
+
     }
 
     /**
-     * Retrieve the logger instance
+     * Get errors object
      *
-     * @return LoggerInterface
+     * @return Errors
      */
-    public function logger() {
+    public function getErrors() {
 
-        return $this->logger;
+        return $this->errors;
 
     }
 
@@ -350,7 +381,7 @@ class RpcServer {
      * @param string $payload
      *
      * @return mixed
-     * @throws \Comodojo\Exception\RpcException
+     * @throws RpcException
      */
     private function uncan($payload) {
 
@@ -417,7 +448,7 @@ class RpcServer {
      * @param boolean $error
      *
      * @return string
-     * @throws \Comodojo\Exception\RpcException
+     * @throws RpcException
      */
     private function can($response, $error) {
 
@@ -484,7 +515,7 @@ class RpcServer {
     /**
      * Inject introspection and reserved RPC methods
      *
-     * @param \Comodojo\RpcServer\Component\Methods $methods
+     * @param Methods $methods
      */
     private static function setIntrospectionMethods($methods) {
 
@@ -522,7 +553,7 @@ class RpcServer {
     /**
      * Inject supported capabilities
      *
-     * @param \Comodojo\RpcServer\Component\Capabilities $capabilities
+     * @param Capabilities $capabilities
      */
     private static function setCapabilities($capabilities) {
 
@@ -546,7 +577,7 @@ class RpcServer {
     /**
      * Inject standard and RPC errors
      *
-     * @param \Comodojo\RpcServer\Component\Errors $errors
+     * @param Errors $errors
      */
     private static function setErrors($errors) {
 

@@ -1,5 +1,7 @@
 <?php namespace Comodojo\RpcServer\Component;
 
+use \Psr\Log\LoggerInterface;
+
 /**
  * RPC errors manager
  *
@@ -25,21 +27,21 @@ class Errors {
      *
      * @var array
      */
-    private $rpc_errors = array();
+    private $rpc_errors = [];
 
     /**
      * Current logger
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    private $logger = null;
+    private $logger;
 
     /**
      * Class constructor
      *
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param LoggerInterface $logger
      */
-    public function __construct(\Psr\Log\LoggerInterface $logger) {
+    public function __construct(LoggerInterface $logger) {
 
         $this->logger = $logger;
 
@@ -57,7 +59,7 @@ class Errors {
 
         if ( array_key_exists($code, $this->rpc_errors) ) {
 
-            $this->logger->warning("Cannot add error ".$code.": duplicate entry");
+            $this->logger->warning("Cannot add error $code: duplicate entry");
 
             return false;
 
@@ -65,7 +67,7 @@ class Errors {
 
             $this->rpc_errors[$code] = $message;
 
-            $this->logger->debug("Added error ".$code);
+            $this->logger->debug("Added error $code");
 
             return true;
 
@@ -86,13 +88,13 @@ class Errors {
 
             unset($this->rpc_errors[$code]);
 
-            $this->logger->debug("Deleted error ".$code);
+            $this->logger->debug("Deleted error $code");
 
             return true;
 
         } else {
 
-            $this->logger->warning("Cannot delete error ".$code.": entry not found");
+            $this->logger->warning("Cannot delete error $code: entry not found");
 
             return false;
 

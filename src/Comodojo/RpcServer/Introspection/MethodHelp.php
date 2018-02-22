@@ -29,6 +29,7 @@ class MethodHelp {
      * @param Parameters $params
      *
      * @return string
+     * @throws RpcException
      */
     final public static function execute(Parameters $params) {
 

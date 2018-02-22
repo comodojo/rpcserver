@@ -1,5 +1,8 @@
 <?php namespace Comodojo\RpcServer\Component;
 
+use \Psr\Log\LoggerInterface;
+use \Comodojo\RpcServer\RpcMethod;
+
 /**
  * RPC methods manager
  *
@@ -25,21 +28,21 @@ class Methods {
      *
      * @var array
      */
-    private $rpc_methods = array();
+    private $rpc_methods = [];
 
     /**
      * Current logger
      *
-     * @var \Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
-    private $logger = null;
+    private $logger;
 
     /**
      * Class constructor
      *
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param LoggerInterface $logger
      */
-    public function __construct(\Psr\Log\LoggerInterface $logger) {
+    public function __construct(LoggerInterface $logger) {
 
         $this->logger = $logger;
 
@@ -48,17 +51,17 @@ class Methods {
     /**
      * Add an RPC method
      *
-     * @param \Comodojo\RpcServer\RpcMethod $method
+     * @param RpcMethod $method
      *
      * @return bool
      */
-    final public function add(\Comodojo\RpcServer\RpcMethod $method) {
+    final public function add(RpcMethod $method) {
 
         $name = $method->getName();
 
         if ( array_key_exists($name, $this->rpc_methods) ) {
 
-            $this->logger->warning("Cannot add method ".$name.": duplicate entry");
+            $this->logger->warning("Cannot add method $name: duplicate entry");
 
             return false;
 
@@ -66,7 +69,7 @@ class Methods {
 
             $this->rpc_methods[$name] = $method;
 
-            $this->logger->debug("Added method ".$name);
+            $this->logger->debug("Added method $name");
 
             return true;
 
@@ -87,13 +90,13 @@ class Methods {
 
             unset($this->rpc_methods[$name]);
 
-            $this->logger->debug("Deleted method ".$name);
+            $this->logger->debug("Deleted method $name");
 
             return true;
 
         } else {
 
-            $this->logger->warning("Cannot delete method ".$name.": entry not found");
+            $this->logger->warning("Cannot delete method $name: entry not found");
 
             return false;
 
@@ -106,7 +109,8 @@ class Methods {
      *
      * @param string $method
      *
-     * @return array|\Comodojo\RpcServer\RpcMethod|null
+     * @return array|RpcMethod|null
+     * @TODO Verify null return in case of missing methods and, in case, handle the error condition
      */
     final public function get($method = null) {
 

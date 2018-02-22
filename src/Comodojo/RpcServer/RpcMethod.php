@@ -1,5 +1,6 @@
 <?php namespace Comodojo\RpcServer;
 
+use \InvalidArgumentException;
 use \Exception;
 
 /**
@@ -23,6 +24,10 @@ use \Exception;
  */
 
 class RpcMethod {
+
+    const FETCH_ASSOC = 'ASSOC';
+
+    const FETCH_NUMERIC = "NUMERIC";
 
     /**
      * Generic-to-RPC values map
@@ -54,42 +59,42 @@ class RpcMethod {
      *
      * @var string
      */
-    private $name = null;
+    private $name;
 
     /**
      * Callback class|function
      *
-     * @var string|function
+     * @var callable
      */
-    private $callback = null;
+    private $callback;
 
     /**
      * Description of method
      *
      * @var string
      */
-    private $description = null;
+    private $description;
 
     /**
      * Array of supported signatures
      *
      * @var array
      */
-    private $signatures = array();
+    private $signatures = [];
 
     /**
      * Internal pointer to current signature
      *
      * @var int
      */
-    private $current_signature = null;
+    private $current_signature;
 
     /**
      * Placeholder for additional arguments
      *
      * @var array
      */
-    private $arguments = array();
+    private $arguments = [];
 
     /**
      * Class constructor
@@ -97,13 +102,13 @@ class RpcMethod {
      * @param string $name
      * @param callable  $callback
      *
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function __construct($name, callable $callback, ...$arguments) {
 
-        if ( !is_string($name) ) throw new Exception("RPC method exception: invalid or undefined name");
+        if ( empty($name) ) throw new InvalidArgumentException("Invalid or undefined RpcMethod name");
 
-        if ( !is_callable($callback) ) throw new Exception("RPC method exception, invalid or undefined callback");
+        if ( !is_callable($callback) ) throw new InvalidArgumentException("Invalid or undefined RpcMethod callback");
 
         $this->name = $name;
 
@@ -142,13 +147,14 @@ class RpcMethod {
      *
      * @param string $description
      *
-     * @return $this
+     * @return self
+     * @throws InvalidArgumentException
      */
     public function setDescription($description = null) {
 
         if ( empty($description) ) $this->description = null;
 
-        else if ( !is_string($description) ) throw new Exception("RPC method exception: invalid description");
+        else if ( !is_string($description) ) throw new InvalidArgumentException("Invalid RpcMethod description");
 
         else $this->description = $description;
 
@@ -181,14 +187,14 @@ class RpcMethod {
     /**
      * Add a signature and switch internal pointer
      *
-     * @return $this
+     * @return self
      */
     public function addSignature() {
 
-        $signature = array(
-            "PARAMETERS" => array(),
+        $signature = [
+            "PARAMETERS" => [],
             "RETURNTYPE" => 'undefined'
-        );
+        ];
 
         array_push($this->signatures, $signature);
 
@@ -209,11 +215,11 @@ class RpcMethod {
 
         if ( $compact ) {
 
-            $signatures = array();
+            $signatures = [];
 
             foreach ( $this->signatures as $signature ) {
 
-                $signatures[] = array_merge(array($signature["RETURNTYPE"]), array_values($signature["PARAMETERS"]));
+                $signatures[] = array_merge([$signature["RETURNTYPE"]], array_values($signature["PARAMETERS"]));
 
             }
 
@@ -238,7 +244,7 @@ class RpcMethod {
 
         if ( $compact ) {
 
-            return array_merge(array($this->signatures[$this->current_signature]["RETURNTYPE"]), array_values($this->signatures[$this->current_signature]["PARAMETERS"]));
+            return array_merge([$this->signatures[$this->current_signature]["RETURNTYPE"]], array_values($this->signatures[$this->current_signature]["PARAMETERS"]));
 
         } else {
 
@@ -254,13 +260,13 @@ class RpcMethod {
      * @param integer $signature The signature's ID
      *
      * @return bool
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function deleteSignature($signature) {
 
         if ( !is_integer($signature) || !isset($this->signatures[$signature]) ) {
 
-            throw new Exception("RPC method exception: invalid signature reference");
+            throw new InvalidArgumentException("Invalid RpcMethod signature reference");
 
         }
 
@@ -275,14 +281,14 @@ class RpcMethod {
      *
      * @param integer $signature The signature's ID
      *
-     * @return $this
+     * @return self
      * @throws Exception
      */
     public function selectSignature($signature) {
 
         if ( !is_integer($signature) || !isset($this->signatures[$signature]) ) {
 
-            throw new Exception("RPC method exception: invalid signature reference");
+            throw new InvalidArgumentException("Invalid RpcMethod signature reference");
 
         }
 
@@ -297,12 +303,12 @@ class RpcMethod {
      *
      * @param string $type
      *
-     * @return $this
-     * @throws Exception
+     * @return self
+     * @throws InvalidArgumentException
      */
     public function setReturnType($type) {
 
-        if ( !in_array($type, self::$rpcvalues) ) throw new Exception("RPC method exception: invalid return type");
+        if ( !in_array($type, self::$rpcvalues) ) throw new InvalidArgumentException("Invalid RpcMethod return type");
 
         $this->signatures[$this->current_signature]["RETURNTYPE"] = self::$rpcvalues[$type];
 
@@ -327,14 +333,14 @@ class RpcMethod {
      * @param string $type
      * @param string $name
      *
-     * @return $this
-     * @throws Exception
+     * @return self
+     * @throws InvalidArgumentException
      */
     public function addParameter($type, $name) {
 
-        if ( !in_array($type, self::$rpcvalues) ) throw new Exception("RPC method exception: invalid parameter type");
+        if ( !in_array($type, self::$rpcvalues) ) throw new InvalidArgumentException("Invalid type for parameter $name");
 
-        if ( empty($name) ) throw new Exception("RPC method exception: invalid parameter name");
+        if ( empty($name) ) throw new InvalidArgumentException("Missing parameter name");
 
         $this->signatures[$this->current_signature]["PARAMETERS"][$name] = self::$rpcvalues[$type];
 
@@ -347,12 +353,12 @@ class RpcMethod {
      *
      * @param string $name
      *
-     * @return $this
+     * @return self
      * @throws Exception
      */
     public function deleteParameter($name) {
 
-        if ( !array_key_exists($name, $this->signatures[$this->current_signature]["PARAMETERS"]) ) throw new Exception("RPC method exception: cannot find parameter");
+        if ( !array_key_exists($name, $this->signatures[$this->current_signature]["PARAMETERS"]) ) throw new Exception("Cannot find parameter $name");
 
         unset($this->signatures[$this->current_signature]["PARAMETERS"][$name]);
 
@@ -367,9 +373,9 @@ class RpcMethod {
      *
      * @return array
      */
-    public function getParameters($format = 'ASSOC') {
+    public function getParameters($format = self::FETCH_ASSOC) {
 
-        if ( $format == 'NUMERIC' ) return array_values($this->signatures[$this->current_signature]["PARAMETERS"]);
+        if ( $format === self::FETCH_NUMERIC ) return array_values($this->signatures[$this->current_signature]["PARAMETERS"]);
 
         else return $this->signatures[$this->current_signature]["PARAMETERS"];
 
@@ -378,25 +384,23 @@ class RpcMethod {
     /**
      * Static class constructor - create an RpcMethod object
      *
-     * @param string            $name
-     * @param string   $callback
+     * @param string $name
+     * @param string $callback
      *
      * @return RpcMethod
      * @throws Exception
      */
-    public static function create($name, $callback, ...$attributes) {
+    public static function create($name, callable $callback, ...$arguments) {
 
         try {
 
-            $method = new RpcMethod($name, $callback, ...$attributes);
+            return  new RpcMethod($name, $callback, ...$arguments);
 
         } catch (Exception $e) {
 
             throw $e;
 
         }
-
-        return $method;
 
     }
 
