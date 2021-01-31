@@ -1,8 +1,9 @@
 <?php
 
 use \Comodojo\RpcServer\RpcServer;
+use \PHPUnit\Framework\TestCase;
 
-class RpcServerTest extends \PHPUnit_Framework_TestCase {
+class RpcServerTest extends TestCase {
 
     public function testSettersAndGetters() {
 
@@ -42,10 +43,9 @@ class RpcServerTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    /**
-     * @expectedException        \Exception
-     */
     public function testInvalidDeclaration() {
+
+        $this->expectException("\Exception");
 
         $server = new \Comodojo\RpcServer\RpcServer('yaml');
 

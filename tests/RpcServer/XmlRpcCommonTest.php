@@ -4,6 +4,7 @@ use \Comodojo\Xmlrpc\XmlrpcEncoder;
 use \Comodojo\Xmlrpc\XmlrpcDecoder;
 use \Comodojo\RpcServer\Tests\CommonCases;
 use \Comodojo\RpcServer\RpcServer;
+use \PHPUnit\Framework\TestCase;
 
 class XmlRpcCommonTest extends CommonCases {
 
@@ -23,13 +24,13 @@ class XmlRpcCommonTest extends CommonCases {
 
     }
 
-    protected function setUp() {
+    protected function setUp(): void {
 
         $this->server = new RpcServer(RpcServer::XMLRPC);
 
     }
 
-    protected function tearDown() {
+    protected function tearDown(): void {
 
         unset($this->server);
 

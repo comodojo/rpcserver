@@ -2,8 +2,9 @@
 
 use \Comodojo\RpcServer\Tests\CommonCases;
 use \Comodojo\RpcServer\RpcServer;
+use \PHPUnit\Framework\TestCase;
 
-class JsonRpcBatchRequestTest extends PHPUnit_Framework_TestCase {
+class JsonRpcBatchRequestTest extends TestCase {
 
     protected $current_id = array();
 
@@ -50,13 +51,13 @@ class JsonRpcBatchRequestTest extends PHPUnit_Framework_TestCase {
 
     }
 
-    protected function setUp() {
+    protected function setUp(): void {
 
         $this->server = new RpcServer(RpcServer::JSONRPC);
 
     }
 
-    protected function tearDown() {
+    protected function tearDown(): void {
 
         unset($this->server);
 
@@ -74,17 +75,17 @@ class JsonRpcBatchRequestTest extends PHPUnit_Framework_TestCase {
 
         $decoded = $this->decodeResponse($result);
 
-        $this->assertInternalType('array', $decoded);
+        $this->assertIsArray( $decoded);
 
-        $this->assertInternalType('array', $decoded[0]);
+        $this->assertIsArray( $decoded[0]);
 
         $this->assertEquals('array', $decoded[0][0]);
 
-        $this->assertInternalType('string', $decoded[1]);
+        $this->assertIsString($decoded[1]);
 
         $this->assertEquals('This method lists all the methods that the RPC server knows how to dispatch', $decoded[1]);
 
-        $this->assertInternalType('array', $decoded[2]);
+        $this->assertIsArray( $decoded[2]);
 
         $this->assertCount(5, $decoded[2]);
 

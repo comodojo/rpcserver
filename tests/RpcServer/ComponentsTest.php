@@ -1,8 +1,9 @@
 <?php
 
 use \Comodojo\Foundation\Logging\Manager as LogManager;
+use \PHPUnit\Framework\TestCase;
 
-class ComponentsTest extends \PHPUnit_Framework_TestCase {
+class ComponentsTest extends TestCase {
 
     public function testCapabilities() {
 
@@ -20,15 +21,15 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
         $get = $cap->get();
 
-        $this->assertInternalType('array', $get);
+        $this->assertIsArray( $get);
 
         $this->assertCount(1, $get);
 
-        $this->assertInternalType('array', $get['spacetrip']);
+        $this->assertIsArray( $get['spacetrip']);
 
         $get = $cap->get("spacetrip");
 
-        $this->assertInternalType('array', $get);
+        $this->assertIsArray( $get);
 
         $this->assertEquals('https://comodojo.org/spacetrip.html', $get['specUrl']);
 
@@ -44,7 +45,7 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
         $nullget = $cap->get();
 
-        $this->assertInternalType('array', $nullget);
+        $this->assertIsArray( $nullget);
 
         $this->assertCount(0, $nullget);
 
@@ -86,7 +87,7 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
         $getall = $err->get();
 
-        $this->assertInternalType('array', $getall);
+        $this->assertIsArray( $getall);
 
     }
 
@@ -122,7 +123,7 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
         $get = $met->get();
 
-        $this->assertInternalType('array', $get);
+        $this->assertIsArray( $get);
 
         $this->assertCount(2, $get);
 
@@ -140,7 +141,7 @@ class ComponentsTest extends \PHPUnit_Framework_TestCase {
 
         $get = $met->get();
 
-        $this->assertInternalType('array', $get);
+        $this->assertIsArray( $get);
 
         $this->assertCount(1, $get);
 

@@ -3,9 +3,10 @@
 use \Comodojo\Xmlrpc\XmlrpcEncoder;
 use \Comodojo\Xmlrpc\XmlrpcDecoder;
 use \Comodojo\RpcServer\RpcServer;
-use \phpseclib\Crypt\AES;
+use \phpseclib3\Crypt\AES;
+use \PHPUnit\Framework\TestCase;
 
-class XmlRpcEncryptedTransportTest extends \PHPUnit_Framework_TestCase {
+class XmlRpcEncryptedTransportTest extends TestCase {
 
     protected $key = "solongandthanksforallthefish";
 
@@ -15,9 +16,9 @@ class XmlRpcEncryptedTransportTest extends \PHPUnit_Framework_TestCase {
 
         $data = $encoder->encodeCall($method, $parameters);
 
-        $aes = new AES();
+        $aes = new AES('ecb');
 
-        $aes->setKey($this->key);
+        $aes->setKey(md5($this->key));
 
         return 'comodojo_encrypted_request-'.base64_encode($aes->encrypt($data));
 
@@ -25,9 +26,9 @@ class XmlRpcEncryptedTransportTest extends \PHPUnit_Framework_TestCase {
 
     protected function decodeResponse($received) {
 
-        $aes = new AES();
+        $aes = new AES('ecb');
 
-        $aes->setKey($this->key);
+        $aes->setKey(md5($this->key));
 
         $data = $aes->decrypt(base64_decode(substr($received, 28)));
 
@@ -37,7 +38,7 @@ class XmlRpcEncryptedTransportTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    protected function setUp() {
+    protected function setUp(): void {
 
         $this->server = new RpcServer(RpcServer::XMLRPC);
 
@@ -45,7 +46,7 @@ class XmlRpcEncryptedTransportTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    protected function tearDown() {
+    protected function tearDown(): void {
 
         unset($this->server);
 
@@ -67,7 +68,7 @@ class XmlRpcEncryptedTransportTest extends \PHPUnit_Framework_TestCase {
 
         $decoded = $this->decodeResponse($result);
 
-        $this->assertInternalType('string', $decoded);
+        $this->assertIsString($decoded);
 
         $this->assertEquals('This method lists all the methods that the RPC server knows how to dispatch', $decoded);
 

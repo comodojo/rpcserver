@@ -2,6 +2,7 @@
 
 use \Comodojo\RpcServer\Tests\CommonCases;
 use \Comodojo\RpcServer\RpcServer;
+use \PHPUnit\Framework\TestCase;
 
 class JsonRpcCommonTest extends CommonCases {
 
@@ -46,13 +47,13 @@ class JsonRpcCommonTest extends CommonCases {
 
     }
 
-    protected function setUp() {
+    protected function setUp(): void {
 
         $this->server = new RpcServer(RpcServer::JSONRPC);
 
     }
 
-    protected function tearDown() {
+    protected function tearDown(): void {
 
         unset($this->server);
 

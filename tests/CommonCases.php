@@ -1,6 +1,8 @@
 <?php namespace Comodojo\RpcServer\Tests;
 
-abstract class CommonCases extends \PHPUnit_Framework_TestCase {
+use \PHPUnit\Framework\TestCase;
+
+abstract class CommonCases extends TestCase {
 
     protected $server;
 
@@ -87,9 +89,9 @@ abstract class CommonCases extends \PHPUnit_Framework_TestCase {
 
         $this->assertCount(2, $decoded);
 
-        $this->assertInternalType('array', $decoded[0]);
+        $this->assertIsArray( $decoded[0]);
 
-        $this->assertInternalType('array', $decoded[1]);
+        $this->assertIsArray( $decoded[1]);
 
         $this->assertCount(3, $decoded[0]);
 
@@ -105,7 +107,7 @@ abstract class CommonCases extends \PHPUnit_Framework_TestCase {
 
         $decoded = $this->decodeResponse($result);
 
-        $this->assertInternalType('string', $decoded);
+        $this->assertIsString($decoded);
 
         $this->assertEquals('This method lists all the methods that the RPC server knows how to dispatch', $decoded);
 
@@ -178,7 +180,7 @@ abstract class CommonCases extends \PHPUnit_Framework_TestCase {
 
             $decoded = $this->decodeResponse($result);
 
-            $this->assertInternalType('array', $decoded);
+            $this->assertIsArray( $decoded);
 
             $this->assertCount(2, $decoded);
 
@@ -219,7 +221,7 @@ abstract class CommonCases extends \PHPUnit_Framework_TestCase {
 
             $decoded = $this->decodeResponse($result);
 
-            $this->assertInternalType('array', $decoded);
+            $this->assertIsArray( $decoded);
 
             $this->assertCount(2, $decoded);
 

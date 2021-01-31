@@ -9,7 +9,7 @@ use \Comodojo\RpcServer\Request\JsonProcessor;
 use \Comodojo\Foundation\Logging\Manager as LogManager;
 use \Comodojo\Xmlrpc\XmlrpcEncoder;
 use \Comodojo\Xmlrpc\XmlrpcDecoder;
-use \phpseclib\Crypt\AES;
+use \phpseclib3\Crypt\AES;
 use \Psr\Log\LoggerInterface;
 use \Comodojo\Exception\RpcException;
 use \Comodojo\Exception\XmlrpcException;
@@ -395,9 +395,9 @@ class RpcServer {
 
             $this->request_is_encrypted = true;
 
-            $aes = new AES();
+            $aes = new AES('ecb');
 
-            $aes->setKey($this->encrypt);
+            $aes->setKey(md5($this->encrypt));
 
             $payload = $aes->decrypt(base64_decode(substr($payload, 27)));
 
@@ -498,9 +498,9 @@ class RpcServer {
 
         if ( $this->request_is_encrypted /* && !empty($encoded) */ ) {
 
-            $aes = new AES();
+            $aes = new AES('ecb');
 
-            $aes->setKey($this->encrypt);
+            $aes->setKey(md5($this->encrypt));
 
             $encoded = 'comodojo_encrypted_response-'.base64_encode($aes->encrypt($encoded));
 

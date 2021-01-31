@@ -1,6 +1,8 @@
 <?php
 
-class RpcMethodTest extends \PHPUnit_Framework_TestCase {
+use \PHPUnit\Framework\TestCase;
+
+class RpcMethodTest extends TestCase {
 
         public function testNewMethod() {
 
@@ -29,7 +31,7 @@ class RpcMethodTest extends \PHPUnit_Framework_TestCase {
 
                 $signatures = $method->getSignatures();
 
-                $this->assertInternalType('array', $signatures);
+                $this->assertIsArray( $signatures);
 
                 $this->assertCount(2, $signatures);
 
@@ -39,7 +41,7 @@ class RpcMethodTest extends \PHPUnit_Framework_TestCase {
 
                 $parameters = $method->getParameters();
 
-                $this->assertInternalType('array', $parameters);
+                $this->assertIsArray( $parameters);
 
                 $this->assertArrayHasKey("a", $parameters);
 

@@ -5,8 +5,9 @@ use \Comodojo\Xmlrpc\XmlrpcDecoder;
 use \Comodojo\RpcServer\Tests\CommonCases;
 use \Comodojo\RpcServer\RpcServer;
 use \Comodojo\RpcServer\RpcMethod;
+use \PHPUnit\Framework\TestCase;
 
-class XmlRpcMulticallTest extends \PHPUnit_Framework_TestCase {
+class XmlRpcMulticallTest extends TestCase {
 
     protected function encodeRequest($data) {
 
@@ -24,7 +25,7 @@ class XmlRpcMulticallTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    protected function setUp() {
+    protected function setUp(): void {
 
         $this->server = new RpcServer(RpcServer::XMLRPC);
 
@@ -47,7 +48,7 @@ class XmlRpcMulticallTest extends \PHPUnit_Framework_TestCase {
 
     }
 
-    protected function tearDown() {
+    protected function tearDown(): void {
 
         unset($this->server);
 
@@ -70,7 +71,7 @@ class XmlRpcMulticallTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(4, $decoded[0]);
 
-        $this->assertInternalType('array', $decoded[1]);
+        $this->assertIsArray( $decoded[1]);
 
         $this->assertEquals(-32601, $decoded[1]['faultCode']);
 
