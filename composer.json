@@ -1,5 +1,5 @@
 {
-    "name": "comodojo/rpcserver",
+    "name": "pmarcelli/rpcserver",
     "description": "Extensible XML and JSON(2.0) RPC server",
     "license": "MIT",
     "type": "library",
@@ -28,10 +28,10 @@
         }
     },
     "require": {
-        "php": ">=5.6.0",
-        "comodojo/xmlrpc": "^1.1",
-        "comodojo/foundation": "^1.0",
-        "phpseclib/phpseclib": "^2.0"
+        "php": "^7.3",
+        "pmarcelli/xmlrpc": "dev-xmlrpc_u7320",
+        "pmarcelli/foundation": "dev-foundation_u7320",
+        "phpseclib/phpseclib": "^3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.0|^5.0",
