@@ -3,11 +3,12 @@
 use \Comodojo\Xmlrpc\XmlrpcEncoder;
 use \Comodojo\Xmlrpc\XmlrpcDecoder;
 use \Comodojo\RpcServer\RpcServer;
-use \phpseclib\Crypt\AES;
+use phpseclib3\Crypt\AES;
 
 class XmlRpcEncryptedTransportTest extends \PHPUnit_Framework_TestCase {
 
-    protected $key = "solongandthanksforallthefish";
+    //Only keys of sizes 16, 24 or 32 supported
+    protected $key = "solongandthanksforallthefishxxxx";
 
     protected function encodeRequest($method, $parameters) {
 
@@ -15,7 +16,7 @@ class XmlRpcEncryptedTransportTest extends \PHPUnit_Framework_TestCase {
 
         $data = $encoder->encodeCall($method, $parameters);
 
-        $aes = new AES();
+        $aes = new AES('ecb');
 
         $aes->setKey($this->key);
 
@@ -25,7 +26,7 @@ class XmlRpcEncryptedTransportTest extends \PHPUnit_Framework_TestCase {
 
     protected function decodeResponse($received) {
 
-        $aes = new AES();
+        $aes = new AES('ecb');
 
         $aes->setKey($this->key);
 
