@@ -9,7 +9,7 @@ use \Comodojo\RpcServer\Request\JsonProcessor;
 use \Comodojo\Foundation\Logging\Manager as LogManager;
 use \Comodojo\Xmlrpc\XmlrpcEncoder;
 use \Comodojo\Xmlrpc\XmlrpcDecoder;
-use \phpseclib\Crypt\AES;
+use phpseclib3\Crypt\AES;
 use \Psr\Log\LoggerInterface;
 use \Comodojo\Exception\RpcException;
 use \Comodojo\Exception\XmlrpcException;
@@ -81,7 +81,8 @@ class RpcServer {
 
     /**
      * Encryption key, in case of encrypted transport
-     *
+     * AES key
+     * Only keys of sizes 16, 24 or 32 supported
      * @var string
      */
     private $encrypt;
@@ -395,7 +396,7 @@ class RpcServer {
 
             $this->request_is_encrypted = true;
 
-            $aes = new AES();
+            $aes = new AES('ecb');
 
             $aes->setKey($this->encrypt);
 
@@ -498,7 +499,7 @@ class RpcServer {
 
         if ( $this->request_is_encrypted /* && !empty($encoded) */ ) {
 
-            $aes = new AES();
+            $aes = new AES('ecb');
 
             $aes->setKey($this->encrypt);
 
