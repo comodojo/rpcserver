@@ -27,6 +27,7 @@
             "Comodojo\\RpcServer\\": "src/Comodojo/RpcServer"
         }
     },
+    "minimum-stability": "dev",
     "require": {
         "php": ">=5.6.0",
         "comodojo/xmlrpc": "dev-master",
