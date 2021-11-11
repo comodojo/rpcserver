@@ -28,7 +28,7 @@
         }
     },
     "require": {
-        "php": "^7.3",
+        "php": ">=5.6.0",
         "pmarcelli/xmlrpc": "dev-xmlrpc_u7320",
         "pmarcelli/foundation": "dev-foundation_u7320",
         "phpseclib/phpseclib": "^3.0"
